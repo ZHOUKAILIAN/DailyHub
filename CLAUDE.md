@@ -69,10 +69,9 @@ DailyHub
 DailyHub/
 ├── CLAUDE.md                          # This file
 ├── README.md                          # Project overview
-├── daily/                             # Top-level daily schedule entry point
+├── daily/                             # Top-level entry point
 │   └── skill/
-│       ├── SKILL.md                   # Orchestration entry (links only, no logic)
-│       └── morning-task-schedule.md   # Authoritative task list (edit here to add tasks)
+│       └── SKILL.md                   # Cron registry ONLY — no logic (edit here to add tasks)
 ├── checkin/                           # API-driven check-in modules (per platform)
 │   └── xiaojuchongdian/
 │       ├── skill/                     # Skill definitions for OpenClaw
@@ -94,22 +93,23 @@ DailyHub/
 
 ### Skill Architecture
 
-Skills are the interface between DailyHub and OpenClaw. Every feature must have a skill before it can be invoked.
+`daily/skill/SKILL.md` is the **single entry point** — a cron registry that maps times to skill paths.
+Every task is a self-contained vertical skill with its own execution logic and failure policy.
 
 ```
-daily/skill/SKILL.md          ← Top-level orchestrator (edit to add tasks to daily schedule)
+daily/skill/SKILL.md          ← Cron registry (Time | Task | Skill path). No logic here.
      │
-     ├── checkin/<platform>/skill/overall/SKILL.md   ← Per-platform entry
-     └── routine/<name>/skill/<task>/SKILL.md        ← Per-routine entry
+     ├── checkin/<platform>/skill/overall/SKILL.md   ← Per-platform entry skill
+     └── routine/<name>/skill/<task>/SKILL.md        ← Per-routine entry skill
 ```
 
-**Rule**: Each skill only links to sub-skills — no implementation logic in orchestration skills.
+**Rule**: `daily/skill/SKILL.md` contains only a table of `Time | Task | Skill`. All logic belongs inside each vertical skill.
 
 ### Adding a New Task to the Daily Schedule
 
-1. Build the vertical skill first: `checkin/<platform>/skill/` or `routine/<name>/skill/`
-2. Add a row to `daily/skill/morning-task-schedule.md`
-3. Add an Execution Flow step and Failure Policy row to `daily/skill/SKILL.md`
+1. Build the vertical skill: `checkin/<platform>/skill/` or `routine/<name>/skill/`
+2. Add one row to `daily/skill/SKILL.md`: `Time | Task name | path to SKILL.md`
+3. That's it — no other files need editing.
 
 ---
 

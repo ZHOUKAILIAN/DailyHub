@@ -1,23 +1,32 @@
 # DailyHub (For OpenClaw)
 
-**DailyHub** 当前聚焦两类晨间能力：  
-1) 小桔充电每日签到自动化  
-2) AI 日报与 changelog 同步自动化  
-目标是让 OpenClaw/Codex 直接理解并执行这些固定任务流程。
+**DailyHub** 是专为 OpenClaw 设计的每日自动化任务中心。
+通过一个统一入口（`daily/skill/SKILL.md`）注册定时任务，每个任务是一个独立的垂直 Skill。
 
-## 🎯 核心场景与功能 (Core Features)
+## 设计核心
 
-- ✅ **当前已落地能力：小桔充电签到 (Xiaoju Charging Check-in)**
-  内置幂等判断与签到记录复核，重点覆盖两件事：
-  1. 如何执行签到
-  2. 如何获取身份认证参数
-- ✅ **当前已落地能力：晨间 AI 信息流任务**
-  覆盖 `09:20` 日报主任务（内含更新同步）。
+```
+daily/skill/SKILL.md          ← 唯一入口：cron 注册表（只有时间 + Skill 路径）
+     │
+     ├── checkin/<platform>/skill/overall/SKILL.md   ← 每个签到平台的独立 Skill
+     └── routine/<name>/skill/<task>/SKILL.md        ← 每个日常任务的独立 Skill
+```
 
-## 🧠 设计理念 (Philosophy)
+- **入口只做一件事**：注册定时任务，不包含任何业务逻辑。
+- **每个任务自治**：执行逻辑、失败策略全部封装在对应 Skill 内。
+- **新增任务只需两步**：建好垂直 Skill → 在入口加一行。
 
-- **API 协议驱动**：把签到链路固定为可重复、可验证、可维护的执行流程。
-- **Skill 驱动**：把“签到执行”和“参数获取”拆成可读的技能文档，便于 AI Agent 维护。
+## 已落地任务
+
+| 时间  | 任务                  | Skill 路径                                                                  |
+|-------|-----------------------|-----------------------------------------------------------------------------|
+| 09:00 | 小桔充电每日签到       | `checkin/xiaojuchongdian/skill/overall/SKILL.md`                            |
+| 09:20 | 晨间 AI 日报          | `routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md`             |
+
+## 两类驱动引擎
+
+- **API 协议驱动**：签到、状态查询等固定流程 — 精确、幂等、可验证。
+- **Prompt 提示词驱动**：日报生成等灵活任务 — 自然语言描述，AI 自主执行。
 
 ## 🚀 快速开始 (Getting Started)
 

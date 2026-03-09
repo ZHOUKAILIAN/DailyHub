@@ -1,0 +1,15 @@
+{
+  "name": "xiaoju-get-params",
+  "display_name": "Xiaoju Charging Get Params",
+  "version": "1.0.0",
+  "description": "Extract required Xiaoju authentication/runtime parameters from app traffic.",
+  "entry": "SKILL.md",
+  "task_type": "api-driven",
+  "platform": "xiaoju",
+  "triggers": [
+    "xiaoju params",
+    "get xiaoju token",
+    "extract xiaoju auth values"
+  ],
+  "requires_env": []
+}

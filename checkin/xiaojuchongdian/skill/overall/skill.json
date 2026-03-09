@@ -1,0 +1,19 @@
+{
+  "name": "xiaoju-overall",
+  "display_name": "Xiaoju Charging Overall",
+  "version": "1.0.0",
+  "description": "Single entry orchestration for Xiaoju Charging daily automation.",
+  "entry": "SKILL.md",
+  "task_type": "api-driven",
+  "platform": "xiaoju",
+  "triggers": [
+    "xiaoju overall",
+    "xiaoju charging automation",
+    "run xiaoju daily flow"
+  ],
+  "requires_env": [
+    "DAILYHUB_XIAOJU_TICKET",
+    "DAILYHUB_XIAOJU_TOKEN",
+    "DAILYHUB_XIAOJU_TOKEN_ID"
+  ]
+}

@@ -1,0 +1,47 @@
+task: xiaoju.checkin
+task_type: api-driven
+platform: xiaoju
+description: 小桔充电每日签到自动化流程
+
+execution:
+  mode: on-demand
+  note: external caller decides when to execute
+
+api_sequence:
+  - step: query_sign_main_before
+    method: POST
+    path: /am/marketing/api/member/charge/activity/sign/main
+    success_condition: success=true AND (status=10000 OR code=SERVICE_RUN_SUCCESS)
+    output:
+      - today_signed
+      - excitation_id
+
+  - step: do_sign_if_needed
+    condition: today_signed == false
+    method: POST
+    path: /am/marketing/api/member/charge/activity/sign/doSign
+    body_dependency:
+      - excitation_id
+
+  - step: query_sign_main_after
+    condition: today_signed == false
+    method: POST
+    path: /am/marketing/api/member/charge/activity/sign/main
+    success_condition: response contains today's signDate
+
+  - step: optional_sign_record
+    condition: verify_record == true
+    method: POST
+    path: /excitation/api/excitation/signRecord
+    purpose: 对账/审计
+
+result_mapping:
+  - when: today_signed == true
+    status: already_signed
+    success: true
+  - when: signed_after == true
+    status: signed
+    success: true
+  - when: otherwise
+    status: failed
+    success: false

@@ -2,10 +2,10 @@
 
 晨间任务清单。新增任务时，在此文件添加一行，并在 `SKILL.md` 中补充对应的执行步骤和失败策略。
 
-| Time  | Task                    | Skill                                                                                                                          | Status   |
+| Order | Task                    | Skill                                                                                                                          | Status   |
 |-------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------|----------|
-| 09:00 | 小桔充电签到             | [xiaoju-overall](../../checkin/xiaojuchongdian/skill/overall/SKILL.md)                                                         | existing |
-| 09:20 | AI 日报 + 前沿更新       | [ai-daily-news-and-changelog](../../routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md)                             | existing |
+| 1     | 小桔充电签到             | [xiaoju-overall](../../checkin/xiaojuchongdian/skill/overall/SKILL.md)                                                         | existing |
+| 2     | AI 日报 + 前沿更新       | [ai-daily-news-and-changelog](../../routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md)                             | existing |
 
 ---
 

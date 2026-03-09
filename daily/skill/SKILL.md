@@ -1,6 +1,6 @@
 ---
 name: morning-orchestrator
-description: Single orchestration entry for the morning routine only. Orchestrates 09:00 check-in and 09:20 AI daily report.
+description: Single orchestration entry for the morning routine only. Orchestrates all morning tasks in order using sub-agents for memory efficiency.
 ---
 
 # Morning Orchestrator Skill
@@ -8,7 +8,7 @@ description: Single orchestration entry for the morning routine only. Orchestrat
 ## Purpose
 
 This is the **single entry point** for the full morning automation routine.
-It defines what tasks run, in what order, and delegates each to the responsible skill.
+It defines what tasks run, in what order, and delegates each to a dedicated sub-agent.
 
 Do not implement task logic here. This skill only orchestrates — each task's execution
 details live in its own skill file (linked below).
@@ -30,55 +30,72 @@ then add the corresponding step below.
 
 ---
 
+## Sub-Agent Execution Model
+
+**To conserve memory and prevent context overflow, you MUST launch a brand-new sub-agent for every step.**
+
+Rules:
+1. **Never execute a checkin or routine skill directly in the main agent context.**
+2. For each step, start a fresh sub-agent and instruct it to invoke the target skill.
+3. Wait for the sub-agent to finish before proceeding.
+4. After the sub-agent returns, **immediately forward its full detailed result as a standalone message to the user**, then start the next sub-agent.
+5. Continue sequentially through all steps until all tasks are complete.
+
+---
+
 ## Execution Flow
 
-### Step 1 - 09:00 Xiaoju Charging Check-in
+Tasks run in the order defined in `morning-task-schedule.md`. Execute each step by launching a sub-agent.
 
-Invoke skill: `xiaoju-overall`
+### Step 1 — Xiaoju Charging Check-in (Order 1)
+
+Launch a sub-agent to invoke skill: `xiaoju-overall`
 → See: [`checkin/xiaojuchongdian/skill/overall/SKILL.md`](../../checkin/xiaojuchongdian/skill/overall/SKILL.md)
 
-Wait for result before proceeding.
+After sub-agent completes:
+- Forward the sub-agent's full detailed result to the user as a standalone message.
+- Then proceed to Step 2.
 
-### Step 2 - 09:20 AI Daily Report
+### Step 2 — AI Daily Report (Order 2)
 
-Invoke skill: `ai-daily-news-and-changelog`
+Launch a sub-agent to invoke skill: `ai-daily-news-and-changelog`
 → See: [`routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md`](../../routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md)
+
+After sub-agent completes:
+- Forward the sub-agent's full detailed result to the user as a standalone message.
 
 ---
 
 ## Failure Policy
 
-| Step        | On failure                                               |
-|-------------|----------------------------------------------------------|
-| 09:00 Check-in  | Report failure reason; continue to Step 2                |
-| 09:20 Daily Report | Report failure reason; mark overall as `partial_failed`  |
+| Step               | On failure                                                               |
+|--------------------|--------------------------------------------------------------------------|
+| Step 1 Check-in    | Report failure reason to user; continue to Step 2                        |
+| Step 2 Daily Report| Report failure reason to user; mark overall as `partial_failed`          |
 
 ---
 
 ## Output Format
 
-Return a case-specific human-readable orchestration summary with:
+After all sub-agents have completed, return a final orchestration summary with:
 
 1. Overall morning status:
-   - `SUCCESS` when both steps complete
-   - `PARTIAL` when check-in succeeds but daily report fails (or vice versa)
-   - `FAILED` when both steps fail
-2. One-line summary:
-   - overall execution result for `09:00` and `09:20`
-3. Step-by-step details:
-   - `09:00` check-in outcome (from `xiaoju-overall`)
-   - `09:20` daily-report outcome (from `ai-daily-news-and-changelog`)
+   - `SUCCESS` when all steps complete
+   - `PARTIAL` when some steps succeed and others fail
+   - `FAILED` when all steps fail
+2. One-line summary of overall execution result
+3. Step-by-step outcome list (one line per step, referencing each sub-agent's reported result)
 4. If failed/partial:
-   - failed step(s)
+   - failed step(s) and reason
    - suggested next action
 
-Optional: append structured `details` object with `checkin` and `daily_report`.
+Note: Each sub-agent's full detailed result has already been forwarded to the user individually. The final summary here is for overall status only.
 
 ---
 
 ## How to Add a New Task
 
-1. Add a row to [`morning-task-schedule.md`](./morning-task-schedule.md)
+1. Add a row to [`morning-task-schedule.md`](./morning-task-schedule.md) with the next Order number
 2. If the task has no skill yet: create a vertical skill directory first (e.g. `checkin/<platform>/skill/` or `routine/<name>/skill/`)
 3. Add a step to the **Execution Flow** section above
 4. Add a row to the **Failure Policy** table above

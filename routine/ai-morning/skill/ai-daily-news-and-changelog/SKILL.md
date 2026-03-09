@@ -1,13 +1,13 @@
 ---
 name: ai-daily-news-and-changelog
-description: Run the daily morning AI report workflow centered on 09:20 news generation with merged frontier updates. Use when the user asks to generate AI daily news, include substantive IDE/CLI and model updates, write one-file blog PR, send the report, and publish to Xiaohongshu via borrowed Agent-Reach OpenClaw skill (which includes MCP capability) with one retry.
+description: Run the daily morning AI report workflow centered on news generation with merged frontier updates. Use when the user asks to generate AI daily news, include substantive IDE/CLI and model updates, write one-file blog PR, send the report, and publish to Xiaohongshu via borrowed Agent-Reach OpenClaw skill (which includes MCP capability) with one retry.
 ---
 
 # AI Daily News and Changelog Skill
 
 ## Purpose
 
-Use this skill to execute the `09:20` morning report pipeline only, where AI daily news and frontier updates are produced in one report.
+Use this skill to execute the morning report pipeline only, where AI daily news and frontier updates are produced in one report.
 
 This skill does not orchestrate other morning tasks. Cross-task sequencing is owned by `daily/skill/SKILL.md`.
 
@@ -28,7 +28,7 @@ If any required input is missing, ask for it once and continue after it is provi
 
 ## Execution Flow
 
-### Step 1: Build 09:20 Daily Report (Merged)
+### Step 1: Build Daily Report (Merged)
 
 1. Invoke the borrowed `daily-intelligence-news` skill from OpenClaw asset: `https://openclawmp.cc/asset/s-027065c89db7e63f`.
 2. Pull frontier IDE/CLI updates (Claude Code, Codex, Cursor, OpenCode).
@@ -39,7 +39,7 @@ If any required input is missing, ask for it once and continue after it is provi
 5. Merge AI daily news + IDE/CLI updates + model updates into one daily report.
 6. Save the report to Blog daily file.
 7. Create a PR with exactly one changed report file.
-8. Send the report content to the user.
+8. Send the report content to the user — **this must include the full report body** (see Output Format below).
 9. Publish the same report to Xiaohongshu through borrowed Agent-Reach OpenClaw skill (includes MCP capability): `https://github.com/Panniantong/Agent-Reach`.
 10. If Xiaohongshu publish fails, retry exactly once.
 
@@ -53,18 +53,27 @@ If any required input is missing, ask for it once and continue after it is provi
 
 ## Output Format
 
-Return a case-specific human-readable report with:
+**CRITICAL: The result returned to the user MUST contain the full, substantive content of the report. Do NOT return only a status summary or a one-liner like "report generated successfully". The user needs to read the actual content.**
+
+Return a human-readable report containing ALL of the following:
 
 1. Report outcome:
    - `SUCCESS`, `PARTIAL`, `FAILED`, or `NO_UPDATES`
 2. One-line summary:
    - whether report generation, blog sync, and Xiaohongshu publish completed
-3. Key details:
-   - report title/date and short summary
-   - blog file write result and PR result
+3. **Full AI Daily News content** — include the complete body of the daily news section as produced in Step 1. Do not truncate or summarize; reproduce all news items.
+4. **Full IDE/CLI Changelog details** — for each tool (Claude Code, Codex, Cursor, OpenCode), list every substantive update retrieved:
+   - Tool name and version/date
+   - Each change item with description
+   - Do not collapse multiple changes into a single vague sentence
+5. **Full Model Update details** — for each frontier model with changes, list:
+   - Model name and release/update date
+   - Each capability change or new feature with description
+   - Do not collapse multiple changes into a single vague sentence
+6. Pipeline status:
+   - blog file write result and PR link/number
    - Xiaohongshu publish result (first try + retry when used)
-   - frontier update highlights (IDE/CLI + model)
-4. If failed/partial:
+7. If failed/partial:
    - failed stage and reason
    - suggested next action
 

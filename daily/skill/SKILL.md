@@ -23,10 +23,12 @@ details live in its own skill file (linked below).
 
 ## Morning Task Schedule
 
-→ See: [`morning-task-schedule.md`](./morning-task-schedule.md)
+晨间任务清单。新增任务时，在下表添加一行，并在 Execution Flow 和 Failure Policy 中补充对应步骤。
 
-This is the authoritative list of all morning tasks. To add a new task, edit that file first,
-then add the corresponding step below.
+| Order | Task             | Skill                  | Status   |
+|-------|------------------|------------------------|----------|
+| 1     | 小桔充电签到      | xiaoju-overall         | existing |
+| 2     | AI 日报 + 前沿更新 | ai-daily-news-and-changelog | existing |
 
 ---
 
@@ -45,7 +47,7 @@ Rules:
 
 ## Execution Flow
 
-Tasks run in the order defined in `morning-task-schedule.md`. Execute each step by launching a sub-agent.
+Tasks run in the order defined in the Morning Task Schedule table above. Execute each step by launching a sub-agent.
 
 ### Step 1 — Xiaoju Charging Check-in (Order 1)
 
@@ -95,7 +97,7 @@ Note: Each sub-agent's full detailed result has already been forwarded to the us
 
 ## How to Add a New Task
 
-1. Add a row to [`morning-task-schedule.md`](./morning-task-schedule.md) with the next Order number
+1. Add a row to the Morning Task Schedule table above with the next Order number
 2. If the task has no skill yet: create a vertical skill directory first (e.g. `checkin/<platform>/skill/` or `routine/<name>/skill/`)
 3. Add a step to the **Execution Flow** section above
 4. Add a row to the **Failure Policy** table above

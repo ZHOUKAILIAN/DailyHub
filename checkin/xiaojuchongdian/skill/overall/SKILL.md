@@ -51,6 +51,26 @@ python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-r
 
 5. Return structured JSON result directly.
 
+## Output Format
+
+Return a case-specific human-readable report with:
+
+1. Overall outcome:
+   - `SUCCESS` when final sign status is `already_signed` or `signed`
+   - `FAILED` when auth/network/business checks fail
+2. One-line summary:
+   - what was executed (`status` + `run`) and final sign result
+3. Key execution facts:
+   - auth readiness (ready / missing)
+   - `main_before` snapshot
+   - `main_after` snapshot when sign action executed
+   - `record` verification result when enabled
+4. If failed:
+   - root reason
+   - suggested next action (for example refresh credentials or retry once)
+
+Optional: append structured `details` with raw command payloads.
+
 ## Workflow Ownership
 
 Use these files as source of truth:

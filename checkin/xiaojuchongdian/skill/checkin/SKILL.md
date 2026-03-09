@@ -58,26 +58,30 @@ API paths used:
 - `POST /am/marketing/api/member/charge/activity/sign/doSign`
 - `POST /excitation/api/excitation/signRecord`
 
-## Expected Result
+## Output Format
 
-Return JSON with:
+Return a human-readable completion report first, with this structure:
 
-- `success`
-- `status` (`already_signed`, `signed`, `failed`)
-- `message`
-- `data.main_before`
-- `data.main_after` (if sign action was executed)
-- `data.record` (if `--verify-record` was enabled and request succeeded)
+1. `Result`: `SUCCESS`, `PARTIAL`, or `FAILED`
+2. `Summary`: one sentence about sign-in outcome
+3. `Key details`:
+   - sign status (`already_signed`, `signed`, `failed`)
+   - `main_before`
+   - `main_after` (if sign action was executed)
+   - `record` (if `--verify-record` was enabled and request succeeded)
+4. If failed:
+   - failure reason
+   - suggested next step (for example refresh credentials and retry once)
 
-## When Record Is Missing After doSign
+Optional: append a structured `details` object for downstream chaining.
 
-If `doSign` was called but today's record is still missing:
+## Verification Mismatch Handling
 
-1. Check `data.do_sign` first.
-2. If `data.do_sign.success != true`, treat as sign API rejection and stop.
-3. If `data.do_sign.success == true` but `data.signed_after == false`, inspect `data.main_after`.
-4. If `data.record` is missing or contains `_error`/`_warning`, check auth/network issues first.
-5. Retry once after refreshing credentials.
+If sign action and verification results look inconsistent, do not hard-code branch logic here.
+
+- Return the most complete evidence available (`main_before`, `main_after`, `record`, and raw error/warning fields).
+- Keep the report factual and concise.
+- Let the model infer the next best action from the returned evidence and current context.
 
 ## Failure Handling
 

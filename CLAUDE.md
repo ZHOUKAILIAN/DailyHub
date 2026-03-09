@@ -67,15 +67,49 @@ DailyHub
 
 ```
 DailyHub/
-├── CLAUDE.md                    # This file
-├── README.md                    # Project overview
+├── CLAUDE.md                          # This file
+├── README.md                          # Project overview
+├── daily/                             # Top-level daily schedule entry point
+│   └── skill/
+│       ├── SKILL.md                   # Orchestration entry (links only, no logic)
+│       └── morning-task-schedule.md   # Authoritative task list (edit here to add tasks)
+├── checkin/                           # API-driven check-in modules (per platform)
+│   └── xiaojuchongdian/
+│       ├── skill/                     # Skill definitions for OpenClaw
+│       │   ├── overall/               # Entry skill for this platform
+│       │   ├── checkin/               # Execution skill
+│       │   └── get-params/            # Auth capture guidance skill
+│       └── src/                       # Python implementation
+├── routine/                           # Prompt-driven or scheduled routines
+│   └── ai-morning/
+│       └── skill/
+│           └── ai-daily-news-and-changelog/
 ├── docs/
-│   ├── requirements/            # Feature requirements
-│   ├── design/                  # Technical design docs
-│   ├── standards/               # Coding standards & conventions
-│   └── analysis/                # Project analysis
-└── [source code TBD]
+│   ├── requirements/                  # Feature requirements
+│   ├── design/                        # Technical design docs
+│   ├── standards/                     # Coding standards & conventions
+│   └── analysis/                      # Project analysis
+└── tests/                             # Test suite
 ```
+
+### Skill Architecture
+
+Skills are the interface between DailyHub and OpenClaw. Every feature must have a skill before it can be invoked.
+
+```
+daily/skill/SKILL.md          ← Top-level orchestrator (edit to add tasks to daily schedule)
+     │
+     ├── checkin/<platform>/skill/overall/SKILL.md   ← Per-platform entry
+     └── routine/<name>/skill/<task>/SKILL.md        ← Per-routine entry
+```
+
+**Rule**: Each skill only links to sub-skills — no implementation logic in orchestration skills.
+
+### Adding a New Task to the Daily Schedule
+
+1. Build the vertical skill first: `checkin/<platform>/skill/` or `routine/<name>/skill/`
+2. Add a row to `daily/skill/morning-task-schedule.md`
+3. Add an Execution Flow step and Failure Policy row to `daily/skill/SKILL.md`
 
 ---
 

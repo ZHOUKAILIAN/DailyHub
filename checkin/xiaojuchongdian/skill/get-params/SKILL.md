@@ -54,3 +54,19 @@ Parameter collection is valid when status command returns:
 
 - `success: true`
 - non-empty `data.main`
+
+## Output Format
+
+Return a human-readable completion report first, with this structure:
+
+1. `Result`: `SUCCESS`, `PARTIAL`, or `FAILED`
+2. `Summary`: whether credentials are validated or still missing
+3. `Key details`:
+   - credential source (`direct_input`, `traffic_capture`, `unknown`)
+   - validated fields
+   - status-check result (when executed)
+4. If not validated:
+   - missing fields
+   - next user action to continue
+
+Optional: append a structured `details` object for downstream chaining.

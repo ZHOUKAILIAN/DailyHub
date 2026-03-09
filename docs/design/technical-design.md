@@ -66,7 +66,39 @@ class TaskResult:
 
 ---
 
-## MVP Implementation (Xiaoju Check-in)
+## Skill Architecture
+
+Skills 是 DailyHub 与 OpenClaw 之间的接口层，每个功能必须有对应 skill 才能被调用。
+
+```
+daily/skill/SKILL.md                              ← 顶层每日调度入口
+     │
+     ├── checkin/<platform>/skill/overall/         ← 平台级签到入口
+     └── routine/<name>/skill/<task>/              ← 场景任务入口
+```
+
+**原则**: 编排 skill 只做链接和顺序控制，不包含实现逻辑。
+
+### Skill Output Format (Case-Specific)
+
+所有 skill 输出采用“人类可读优先”策略，但**不要求统一模板**。每个 skill 可按自身场景定义输出格式。
+
+每个 skill 的 `Output Format` 至少要明确：
+
+1. 如何表达任务成功/部分成功/失败。
+2. 人类可读摘要要包含哪些关键信息。
+3. 失败时如何给出原因与下一步建议。
+4. 如需链路编排，可附加结构化 `details` 补充信息。
+
+可选表达形式（按 skill 自行选择）：
+
+- 短段落 + 关键要点列表
+- 分段标题（Result / Summary / Key Details / Next Step）
+- 表格化结果摘要
+
+---
+
+## Current Implementation (Xiaoju Check-in)
 
 首个落地任务采用 Python 实现，目录结构遵循标准约定：
 
@@ -94,7 +126,14 @@ checkin/
 - `python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin`
 - `python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-record`
 
-该实现目标是为 OpenClaw 提供统一调用面，后续新平台复用同一 Task 接口。
+---
+
+## Adding a New Platform
+
+1. 创建 `checkin/<platform>/skill/overall/SKILL.md` — 定义调用入口
+2. 创建 `checkin/<platform>/src/` — 实现 TaskModule 接口
+3. 在 `daily/skill/morning-task-schedule.md` 添加行，并更新 `daily/skill/SKILL.md`
+4. 在 `docs/requirements/` 和 `docs/design/` 补充文档
 
 ---
 

@@ -32,6 +32,27 @@ DESCRIPTION = "京东每日签到"
 
 ---
 
+## Skill Convention
+
+### Output Format (Mandatory)
+
+每个可调用 skill 的 `SKILL.md` 必须包含 `## Output Format` 章节，并以“人可读汇报”定义输出：
+
+- 明确该 skill 的任务结果状态表达方式
+- 一句自然语言摘要（任务做了什么，结果如何）
+- 关键结果要点（例如签到状态、PR 链接、发布结果）
+- 失败时的原因和建议动作
+
+约束规则：
+
+1. 不要求全仓统一模板；每个 skill 可按场景自定义输出格式。
+2. 不允许仅输出接口字段列表或裸 JSON。
+3. 若需要机器消费，可追加 `details` 结构化块，但人类可读总结必须在前。
+4. 编排 skill 的关键结果按子任务分组描述（例如 check-in 结果、daily report 结果）。
+5. 执行 skill 只描述本职责相关结果，不混入跨任务编排说明。
+
+---
+
 ## Git Convention
 
 ### Branch Strategy

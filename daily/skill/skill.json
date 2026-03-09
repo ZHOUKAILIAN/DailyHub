@@ -1,0 +1,25 @@
+{
+  "name": "morning-orchestrator",
+  "display_name": "Morning Orchestrator",
+  "version": "1.0.0",
+  "description": "Single orchestration entry for the morning routine: 09:00 check-in and 09:20 daily report.",
+  "entry": "SKILL.md",
+  "task_type": "orchestration",
+  "platform": "ai-morning",
+  "triggers": [
+    "run morning routine",
+    "start morning automation",
+    "run all morning tasks",
+    "morning orchestrator",
+    "morning overall"
+  ],
+  "requires_env": [
+    "DAILYHUB_XIAOJU_TICKET",
+    "DAILYHUB_XIAOJU_TOKEN",
+    "DAILYHUB_XIAOJU_TOKEN_ID"
+  ],
+  "sub_skills": [
+    "checkin/xiaojuchongdian/skill/overall",
+    "routine/ai-morning/skill/ai-daily-news-and-changelog"
+  ]
+}

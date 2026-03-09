@@ -1,0 +1,16 @@
+{
+  "name": "ai-daily-news-and-changelog",
+  "display_name": "AI Daily News and Changelog",
+  "version": "1.0.0",
+  "description": "Orchestrate a single-time 09:20 AI daily report with frontier IDE/CLI and model updates.",
+  "entry": "SKILL.md",
+  "task_type": "prompt-driven",
+  "platform": "ai-morning",
+  "triggers": [
+    "run ai morning report",
+    "daily intelligence news with ide cli model updates",
+    "morning ai workflow",
+    "generate report and sync frontier updates"
+  ],
+  "requires_env": []
+}

@@ -61,6 +61,14 @@
 - 同步向用户发送日报内容
 - 同步发布到小红书（借用 Agent-Reach OpenClaw skill，内含 MCP 能力：`https://github.com/Panniantong/Agent-Reach`），失败自动重试 1 次
 
+### FR-003: 分步汇报编排（Step-by-Step Reporting Orchestration）
+
+- `daily/skill/SKILL.md` 禁止“等待全部子任务完成后统一回复”。
+- 每个子任务执行周期必须固定为：启动子 Agent -> 等待完成 -> 立即向用户发送该步结果 -> 自动触发下一步。
+- Step 1 结果消息末尾必须显式声明下一步：`接下来将开始执行 Step 2 (AI 日报 + 前沿更新)`。
+- Step 2 完成后必须先发送 Step 2 结果消息，再发送全局状态总结消息。
+- 全局状态总结必须包含：整体成功/部分失败/失败状态、每步结果、异常建议动作。
+
 ## 4. 非功能需求
 
 | NFR | 要求 |
@@ -69,6 +77,7 @@
 | NFR-002 可观测性 | 每个时段任务均有结构化回执（成功/失败/摘要） |
 | NFR-003 可维护性 | 外部依赖链接、用途、失败策略在仓库内有明确记录 |
 | NFR-004 安全性 | 凭证/密钥不入库，仅记录命名规范与注入位置 |
+| NFR-005 交互存活性 | 长任务执行期间必须在子任务粒度产生用户可见回执，避免超时无响应 |
 
 ---
 
@@ -88,6 +97,21 @@
 3. 任务 2 skill 职责单一：`ai-daily-news-and-changelog` 仅负责 09:20 日报链路。
 4. `daily` 编排 skill 已组合 09:00 -> 09:20，并定义失败不阻断策略。
 5. 新/改 skill 通过 `skill-creator` 提供的基础校验。
+6. Step 1 完成后存在独立汇报消息，且消息末尾包含“即将执行 Step 2”的声明。
+7. Step 1 消息发送后无需人工确认，编排会自动推进到 Step 2。
+8. Step 2 完成后存在独立汇报消息，且不与全局总结混为一条消息。
+9. 全局总结消息紧随 Step 2 汇报之后，包含 overall 状态、分步结果、失败建议。
+
+---
+
+## 7. 验证步骤
+
+1. 检查编排 skill 是否定义分步汇报与自动推进：
+   - `rg -n "Sub-Agent Execution Model|After sub-agent completes|Step 1 Report|Step 2 Report|Final Global Summary" daily/skill/SKILL.md`
+2. 检查需求与设计文档是否覆盖 FR-003：
+   - `rg -n "FR-003|分步汇报|自动推进|三段式" docs/requirements/morning-automation-requirements.md docs/design/morning-automation-skill-design.md`
+3. 运行现有 Python 测试回归：
+   - `python3 -m unittest discover -s tests -q`
 
 ---
 

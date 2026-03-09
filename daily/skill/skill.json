@@ -1,8 +1,8 @@
 {
   "name": "morning-orchestrator",
   "display_name": "Morning Orchestrator",
-  "version": "1.0.0",
-  "description": "Single orchestration entry for the morning routine: 09:00 check-in and 09:20 daily report.",
+  "version": "1.1.0",
+  "description": "Single orchestration entry for the morning routine with step-by-step reporting and automatic progression: 09:00 check-in then 09:20 daily report.",
   "entry": "SKILL.md",
   "task_type": "orchestration",
   "platform": "ai-morning",

@@ -31,8 +31,8 @@ If any required input is missing, ask for it once and continue after it is provi
 ### Step 1: Build Daily Report (Merged)
 
 1. Invoke the borrowed `daily-intelligence-news` skill from OpenClaw asset: `https://openclawmp.cc/asset/s-027065c89db7e63f`.
-2. Pull frontier IDE/CLI updates (Claude Code, Codex, Cursor, OpenCode).
-3. Pull frontier model updates (new releases and meaningful capability changes).
+2. **CRITICAL**: Pull frontier IDE/CLI updates (Claude Code, Codex, Cursor, OpenCode) **sequentially** using web search. Do not fetch them in parallel.
+3. **CRITICAL**: Pull frontier model updates (new releases and meaningful capability changes) **sequentially** using web search. Do not fetch them in parallel.
 4. Keep only substantive updates and format each as:
    - overall summary
    - key change points

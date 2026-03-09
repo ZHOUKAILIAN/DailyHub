@@ -1,8 +1,8 @@
 {
   "name": "morning-orchestrator",
   "display_name": "Morning Orchestrator",
-  "version": "1.1.0",
-  "description": "Single orchestration entry for the morning routine with step-by-step reporting and automatic progression: 09:00 check-in then 09:20 daily report.",
+  "version": "1.2.0",
+  "description": "Morning automation entry point. Registers one cron job per task in the schedule table. Each job fires at its specified time and invokes the corresponding skill.",
   "entry": "SKILL.md",
   "task_type": "orchestration",
   "platform": "ai-morning",

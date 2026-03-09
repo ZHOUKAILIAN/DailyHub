@@ -1,24 +1,24 @@
 ---
 name: morning-orchestrator
-description: 晨间编排入口。执行此 skill 后，为下表每个任务注册一个 cron 定时任务，到点自动调用对应 skill。
+description: Morning automation entry point. Registers one cron job per task in the schedule table. Each job fires at its specified time and invokes the corresponding skill.
 ---
 
 # Morning Orchestrator Skill
 
-## 任务清单
+## Task Schedule
 
-| Time  | Task             | Skill                       |
-|-------|------------------|-----------------------------|
-| 09:00 | 小桔充电签到      | xiaoju-overall              |
-| 09:20 | AI 日报 + 前沿更新 | ai-daily-news-and-changelog |
+| Time  | Task                        | Skill                                                                                                                                              |
+|-------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| 09:00 | Xiaoju Charging Check-in    | [xiaoju-overall](../../checkin/xiaojuchongdian/skill/overall/SKILL.md)                                                                             |
+| 09:20 | AI Daily Report             | [ai-daily-news-and-changelog](../../routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md)                                                 |
 
-## 执行说明
+## Execution
 
-读取上表，为每一行注册一个 cron 定时任务：
-- 时间取 `Time` 列
-- 到点后调用 `Skill` 列对应的 skill
-- 所有定时任务注册完成后，向用户汇报注册结果
+Read the table above and register one cron job for each row:
+- Use the `Time` column as the schedule.
+- Invoke the skill in the `Skill` column when the job fires.
+- Report all registered jobs to the user after setup is complete.
 
-## 新增任务
+## Adding a New Task
 
-在上表添加一行（Time + Task + Skill），重新执行此 skill 即可更新定时计划。
+Add a row to the table (Time + Task + Skill) and re-run this skill to update the schedule.

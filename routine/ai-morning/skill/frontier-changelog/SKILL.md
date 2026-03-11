@@ -9,25 +9,33 @@ description: Custom skill to gather IDE/CLI changelogs and model updates via sea
 
 Use this standalone custom skill to autonomously track and pull frontier IDE/CLI updates and major AI model updates.
 
-## IDE/CLI Source Map (Official First)
+## IDE/CLI Source Map (Official First, Faster Fallbacks)
 
 - Claude Code:
+  - `https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md`
+  - `https://github.com/anthropics/claude-code/releases`
   - `https://docs.anthropic.com/en/release-notes/claude-code`
 - Codex:
+  - `https://github.com/openai/codex/releases`
+  - `https://r.jina.ai/http://developers.openai.com/codex/changelog`
   - `https://developers.openai.com/codex/changelog`
 - Cursor:
   - `https://cursor.com/changelog`
+  - `https://r.jina.ai/http://cursor.com/changelog`
 - Gemini CLI:
   - `https://google-gemini.github.io/gemini-cli/docs/changelogs/`
+  - `https://r.jina.ai/http://google-gemini.github.io/gemini-cli/docs/changelogs/`
 - Antigravity:
   - `https://antigravity.google/changelog`
+  - `https://r.jina.ai/http://antigravity.google/changelog`
 - OpenCode:
+  - `https://github.com/anomalyco/opencode/releases`
   - `https://opencode.ai/changelog`
 
 ## Execution Flow
 
 1. **CRITICAL**: Pull frontier IDE/CLI updates in this fixed order: Claude Code -> Codex -> Cursor -> Gemini CLI -> Antigravity -> OpenCode.
-   - **CRITICAL**: You MUST fetch from the fixed URL list above first. Do not replace with other links unless the listed URL is unavailable.
+   - **CRITICAL**: You MUST fetch from the fixed URL list above first (top-to-bottom per tool). Do not replace with other links unless all listed URLs for that tool are unavailable.
    - For the fixed URLs listed in this skill, use `web_fetch` in parallel to collect raw changelog pages.
    - For discovery/verification queries, keep `web_search` serial (one tool per search request). Do not batch `web_search` queries.
    - Source priority:

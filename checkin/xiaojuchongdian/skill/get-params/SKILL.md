@@ -1,15 +1,84 @@
 ---
 name: xiaoju-get-params
-description: Collect and validate Xiaoju Charging auth/runtime parameters from direct user input or app traffic capture for check-in execution.
+description: Get fresh Xiaoju Charging auth/runtime parameters through API login (phone + SMS code) and validate them for check-in.
 ---
 
 # Xiaoju Charging Get-Params Skill
 
 ## Purpose
 
-Collect authentication/runtime parameters for Xiaoju Charging check-in.
+Use API only (no UI click automation) to get latest Xiaoju check-in credentials:
 
-## Parameters
+- send SMS code
+- verify code
+- get `ticket/token/tokenId`
+- validate with check-in status API
+
+## When To Use
+
+Use this skill when:
+
+- today's check-in fails with `ticket/token` expired
+- user can provide phone number + SMS code
+- you need a reusable API path for credential refresh
+
+## Required Inputs
+
+- phone number (must ask user each run; do not reuse cached value)
+- SMS code (must ask user each run after send-code; do not infer)
+
+## Runtime Dependencies
+
+- Bundled Node auth client:
+  `checkin/xiaojuchongdian/skill/get-params/scripts/xj_auth_client.js`
+- Optional override:
+  `XJ_AUTH_CLIENT=/path/to/xj_auth_client.js` (or `passport_auth_client.js`)
+- DailyHub check-in CLI module:
+  `checkin.xiaojuchongdian.src.main`
+- helper script in this skill:
+  `checkin/xiaojuchongdian/skill/get-params/scripts/get_params_via_api.sh`
+
+Default auth client discovery order in script:
+
+1. Bundled `scripts/xj_auth_client.js`
+2. `XJ_AUTH_CLIENT`
+3. 从当前工作目录向上逐级查找：
+   - `<ancestor>/xj_sign_api/passport_auth_client.js`
+   - `<ancestor>/passport_auth_client.js`
+4. 从脚本目录向上逐级查找同上路径
+5. `~/xj_sign_api/passport_auth_client.js`
+
+## Collection Procedure
+
+1. Ask user for phone number.
+2. Send SMS code:
+
+```bash
+cd checkin/xiaojuchongdian/skill/get-params
+bash scripts/get_params_via_api.sh send-code --phone <PHONE_FROM_USER>
+```
+
+3. Ask user for SMS code.
+4. Login by SMS code and save latest auth JSON:
+
+```bash
+bash scripts/get_params_via_api.sh login --phone <PHONE_FROM_USER> --code <SMS_CODE_FROM_USER> --out /tmp/xj_auth_latest.json
+```
+
+5. Print exportable env values:
+
+```bash
+bash scripts/get_params_via_api.sh export-env --json /tmp/xj_auth_latest.json
+```
+
+6. Validate with Xiaoju check-in status:
+
+```bash
+cd <dailyhub_repo_root>
+python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin
+```
+
+## Expected Fields
 
 Required:
 
@@ -23,50 +92,31 @@ Recommended:
 - `DAILYHUB_XIAOJU_AM_CHANNEL`
 - `DAILYHUB_XIAOJU_SOURCE`
 - `DAILYHUB_XIAOJU_TTID`
+- `DAILYHUB_XIAOJU_BIZ_LINE`
+- `DAILYHUB_XIAOJU_CITY_ID`
 
-## Collection Procedure
+## Validation Criteria
 
-1. Ask user first:
-   `Do you want to provide ticket/token/tokenId directly, or should I guide you to capture them from app traffic?`
-2. If user provides values directly, skip traffic capture and validate immediately with `status` command.
-3. If user needs guidance, continue with traffic capture.
-4. Open Xiaoju Charging page in the official app (with signed-in account).
-5. Capture HTTPS traffic with a trusted proxy tool (Charles, Proxyman, or HttpCanary).
-6. Locate request:
-   - `POST /am/marketing/api/member/charge/activity/sign/main`
-7. Copy values from request body:
-   - `ticket` -> `DAILYHUB_XIAOJU_TICKET`
-   - `token` -> `DAILYHUB_XIAOJU_TOKEN`
-   - `tokenId` -> `DAILYHUB_XIAOJU_TOKEN_ID`
-   - `appId` -> `DAILYHUB_XIAOJU_APP_ID`
-   - `amChannel` -> `DAILYHUB_XIAOJU_AM_CHANNEL`
-   - `source` -> `DAILYHUB_XIAOJU_SOURCE`
-   - `ttid` -> `DAILYHUB_XIAOJU_TTID`
-8. Export them to env and run status command:
+Auth is valid when:
 
-```bash
-python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin
-```
-
-## Validation
-
-Parameter collection is valid when status command returns:
-
-- `success: true`
-- non-empty `data.main`
+- `login-by-code` returns `errno == 0`
+- returned payload has `sign_auth`
+- `status` command does not return auth error
 
 ## Output Format
 
 Return a human-readable completion report first, with this structure:
 
 1. `Result`: `SUCCESS`, `PARTIAL`, or `FAILED`
-2. `Summary`: whether credentials are validated or still missing
+2. `Summary`: whether API auth refresh succeeded
 3. `Key details`:
-   - credential source (`direct_input`, `traffic_capture`, `unknown`)
-   - validated fields
-   - status-check result (when executed)
+   - phone (masked)
+   - source (`api_sms_login`)
+   - `errno` and `traceid` (if present)
+   - exported fields
+   - status-check result
 4. If not validated:
-   - missing fields
-   - next user action to continue
+   - failure reason (`40002/40003/41002/network/parse`)
+   - next action (re-send code / get captcha / retry)
 
 Optional: append a structured `details` object for downstream chaining.

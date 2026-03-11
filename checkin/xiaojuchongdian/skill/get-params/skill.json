@@ -2,13 +2,15 @@
   "name": "xiaoju-get-params",
   "display_name": "Xiaoju Charging Get Params",
   "version": "1.0.0",
-  "description": "Extract required Xiaoju authentication/runtime parameters from app traffic.",
+  "description": "Refresh Xiaoju authentication parameters by API SMS login and return export-ready values.",
   "entry": "SKILL.md",
   "task_type": "api-driven",
   "platform": "xiaoju",
   "triggers": [
     "xiaoju params",
     "get xiaoju token",
+    "xiaoju sms login",
+    "refresh xiaoju ticket",
     "extract xiaoju auth values"
   ],
   "requires_env": []

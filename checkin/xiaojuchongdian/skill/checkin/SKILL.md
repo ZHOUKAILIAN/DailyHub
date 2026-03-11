@@ -20,12 +20,12 @@ Execute Xiaoju Charging daily check-in with idempotency and verification.
 
 If auth fails (or required auth env is missing), ask this first:
 
-- `Do you want to provide the Xiaoju credentials directly, or should I guide you to capture them from app traffic?`
+- `Do you want to provide Xiaoju credentials directly, or should I refresh them by API SMS login through get-params?`
 
 Then branch:
 
 - if user provides credentials directly: apply values and retry `status`/`run`
-- if user wants guidance: switch to `get-params` skill
+- if user wants guided refresh: switch to `get-params` skill (API SMS login)
 
 ## Commands
 
@@ -86,7 +86,7 @@ If sign action and verification results look inconsistent, do not hard-code bran
 ## Failure Handling
 
 - `authentication failed` (ticket/token/tokenId, sometimes called "cookie"):
-  ask user whether to provide credentials directly or follow guided capture via `get-params`
+  ask user whether to provide credentials directly or follow API refresh via `get-params`
 - network/http errors: keep failure context and return raw error message
 - business failure: return payload-level signals for triage
 

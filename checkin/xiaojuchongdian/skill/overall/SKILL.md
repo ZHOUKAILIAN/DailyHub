@@ -33,10 +33,10 @@ Recommended additional variables (can use defaults if omitted):
 ## Execution Flow
 
 1. If required variables are missing or auth is invalid, ask:
-   `Do you want to provide the Xiaoju credentials directly, or should I guide you to capture them from app traffic?`
+   `Do you want to provide Xiaoju credentials directly, or should I refresh them by API SMS login through get-params?`
 2. Branch on user choice:
    - provide directly -> set env values and continue
-   - guided capture -> switch to `get-params` skill first
+   - guided API refresh -> switch to `get-params` skill first
 3. Run status check:
 
 ```bash

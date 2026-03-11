@@ -26,8 +26,7 @@ Use this skill strictly to merge the output results from `daily-news` and `front
    [Task B Content Here]
    ```
 3. Use the unified markdown document to create a Blog file and submit a PR.
-4. Do not publish to Xiaohongshu.
-5. Provide a summary of semantic completion to the user.
+4. Provide a summary of semantic completion to the user.
 
 ## Output Format
 

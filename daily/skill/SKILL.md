@@ -10,7 +10,9 @@ description: Top-level entry point for DailyHub. Defines all scheduled tasks as 
 | Time  | Task                     | Skill                                                                               |
 |-------|--------------------------|-------------------------------------------------------------------------------------|
 | 09:00 | Xiaoju Charging Check-in | [xiaoju-overall](../../checkin/xiaojuchongdian/skill/overall/SKILL.md)              |
-| 09:20 | AI Daily Report          | [ai-daily-news-and-changelog](../../routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md) |
+| 09:20 | AI Daily News            | [daily-news](../../routine/ai-morning/skill/daily-news/SKILL.md)                   |
+| 09:25 | Frontier Changelog       | [frontier-changelog](../../routine/ai-morning/skill/frontier-changelog/SKILL.md)   |
+| 09:30 | Morning Publish          | [morning-publish](../../routine/ai-morning/skill/morning-publish/SKILL.md)         |
 
 ## Rules
 

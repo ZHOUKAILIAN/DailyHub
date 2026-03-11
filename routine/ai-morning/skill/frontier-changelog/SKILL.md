@@ -14,7 +14,7 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 - Claude Code:
   - `https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md`
 - Codex:
-  - `https://github.com/openai/codex/releases`
+  - `https://developers.openai.com/codex/changelog`
 - Cursor:
   - `https://cursor.com/changelog`
 - Gemini CLI:

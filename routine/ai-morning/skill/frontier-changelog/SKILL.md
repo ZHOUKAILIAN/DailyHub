@@ -20,11 +20,12 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 - Cursor:
   - `https://cursor.com/changelog`
 - Gemini CLI:
-  - `https://google-gemini.github.io/gemini-cli/docs/releases.html`
+  - `https://google-gemini.github.io/gemini-cli/docs/changelogs/`
+  - `https://r.jina.ai/http://google-gemini.github.io/gemini-cli/docs/changelogs/`
   - `https://github.com/google-gemini/gemini-cli/releases`
 - Antigravity:
-  - `https://antigravity.google/releases`
-  - `https://antigravity.google/download`
+  - `https://antigravity.google/changelog`
+  - `https://r.jina.ai/http://antigravity.google/changelog`
 - OpenCode:
   - `https://opencode.ai/changelog`
   - `https://github.com/anomalyco/opencode/tags`

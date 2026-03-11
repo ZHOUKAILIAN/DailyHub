@@ -78,11 +78,12 @@
   - Cursor:
     - `https://cursor.com/changelog`
   - Gemini CLI:
-    - `https://google-gemini.github.io/gemini-cli/docs/releases.html`
+    - `https://google-gemini.github.io/gemini-cli/docs/changelogs/`（官方 changelog 页）
+    - `https://r.jina.ai/http://google-gemini.github.io/gemini-cli/docs/changelogs/`（抓取兜底入口）
     - `https://github.com/google-gemini/gemini-cli/releases`
   - Antigravity:
-    - `https://antigravity.google/releases`（官方发布页）
-    - `https://antigravity.google/download`（官方安装入口，用于版本交叉确认）
+    - `https://antigravity.google/changelog`（官方 changelog 页）
+    - `https://r.jina.ai/http://antigravity.google/changelog`（抓取兜底入口）
   - OpenCode:
     - `https://opencode.ai/changelog`
     - `https://github.com/anomalyco/opencode/tags`

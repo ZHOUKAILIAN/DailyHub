@@ -56,8 +56,8 @@ routine/ai-morning/skill/
    - Claude Code: `https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md`
    - Codex: `https://developers.openai.com/codex/changelog`, `https://github.com/openai/codex/releases`
    - Cursor: `https://cursor.com/changelog`
-   - Gemini CLI: `https://google-gemini.github.io/gemini-cli/docs/releases.html`, `https://github.com/google-gemini/gemini-cli/releases`
-   - Antigravity: `https://antigravity.google/releases`
+   - Gemini CLI: `https://google-gemini.github.io/gemini-cli/docs/changelogs/`, `https://r.jina.ai/http://google-gemini.github.io/gemini-cli/docs/changelogs/`, `https://github.com/google-gemini/gemini-cli/releases`
+   - Antigravity: `https://antigravity.google/changelog`, `https://r.jina.ai/http://antigravity.google/changelog`
    - OpenCode: `https://opencode.ai/changelog`, `https://github.com/anomalyco/opencode/tags`
 4. 精简过滤：若无实质进展（如仅修了个别非感知 bug），则忽略该产品的变更日志。
 5. 汇总成一份专属的《AI 前沿工具与模型更新追踪》Markdown 报告。

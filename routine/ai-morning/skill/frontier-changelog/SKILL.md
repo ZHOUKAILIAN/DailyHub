@@ -22,7 +22,7 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 - Antigravity:
   - `https://antigravity.google/changelog`
 - OpenCode:
-  - `https://github.com/anomalyco/opencode/releases`
+  - `https://opencode.ai/changelog`
 
 ## Execution Flow
 

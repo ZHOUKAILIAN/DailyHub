@@ -9,12 +9,12 @@ description: Custom skill to gather IDE/CLI changelogs and model updates via sea
 
 Use this standalone custom skill to autonomously track and pull frontier IDE/CLI updates and major AI model updates.
 
-## IDE/CLI Source Map (Official First)
+## IDE/CLI Source Map (One Official Source per Tool)
 
 - Claude Code:
-  - `https://docs.anthropic.com/en/release-notes/claude-code`
+  - `https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md`
 - Codex:
-  - `https://developers.openai.com/codex/changelog`
+  - `https://r.jina.ai/http://developers.openai.com/codex/changelog`
 - Cursor:
   - `https://cursor.com/changelog`
 - Gemini CLI:
@@ -27,7 +27,7 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 ## Execution Flow
 
 1. **CRITICAL**: Pull frontier IDE/CLI updates in this fixed order: Claude Code -> Codex -> Cursor -> Gemini CLI -> Antigravity -> OpenCode.
-   - **CRITICAL**: You MUST fetch from the fixed URL list above first. Do not replace with other links unless the listed URL is unavailable.
+   - **CRITICAL**: You MUST fetch from the single fixed URL per tool above first. Do not replace with other links unless that URL is unavailable.
    - For the fixed URLs listed in this skill, use `web_fetch` in parallel to collect raw changelog pages.
    - For discovery/verification queries, keep `web_search` serial (one tool per search request). Do not batch `web_search` queries.
    - Source priority:

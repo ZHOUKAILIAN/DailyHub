@@ -12,27 +12,24 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 ## IDE/CLI Source Map (Official First)
 
 - Claude Code:
-  - `https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md`
   - `https://docs.anthropic.com/en/release-notes/claude-code`
 - Codex:
   - `https://developers.openai.com/codex/changelog`
-  - `https://github.com/openai/codex/releases`
 - Cursor:
   - `https://cursor.com/changelog`
 - Gemini CLI:
   - `https://google-gemini.github.io/gemini-cli/docs/changelogs/`
-  - `https://r.jina.ai/http://google-gemini.github.io/gemini-cli/docs/changelogs/`
-  - `https://github.com/google-gemini/gemini-cli/releases`
 - Antigravity:
   - `https://antigravity.google/changelog`
-  - `https://r.jina.ai/http://antigravity.google/changelog`
 - OpenCode:
   - `https://opencode.ai/changelog`
-  - `https://github.com/anomalyco/opencode/tags`
 
 ## Execution Flow
 
-1. **CRITICAL**: Pull frontier IDE/CLI updates in this fixed order, and call `web_search` serially (one tool per search request): Claude Code -> Codex -> Cursor -> Gemini CLI -> Antigravity -> OpenCode. Do not fetch them in parallel or in a batch query.
+1. **CRITICAL**: Pull frontier IDE/CLI updates in this fixed order: Claude Code -> Codex -> Cursor -> Gemini CLI -> Antigravity -> OpenCode.
+   - **CRITICAL**: You MUST fetch from the fixed URL list above first. Do not replace with other links unless the listed URL is unavailable.
+   - For the fixed URLs listed in this skill, use `web_fetch` in parallel to collect raw changelog pages.
+   - For discovery/verification queries, keep `web_search` serial (one tool per search request). Do not batch `web_search` queries.
    - Source priority:
      1) Official release notes/changelog pages
      2) GitHub official org/repo releases or official announcements

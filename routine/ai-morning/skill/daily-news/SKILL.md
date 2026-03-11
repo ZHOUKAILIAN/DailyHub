@@ -20,7 +20,7 @@ Use this skill exclusively to fetch the morning AI daily news. It delegates the 
 
 ## Execution Flow
 
-1. Confirm `daily-intelligence-news` is available locally (installed skill or MCP capability). If missing, install it first via `skill-installer`.
+1. Confirm `daily-intelligence-news` is available locally (installed skill/capability). If missing, install it first via `skill-installer`.
 2. Invoke the externally provided `daily-intelligence-news` capability to retrieve the latest AI news.
 3. If configured or requested, publish the report to Xiaohongshu via an available local publishing capability.
 4. **CRITICAL**: Present the exact Markdown content of the news report to the user in the prompt output.

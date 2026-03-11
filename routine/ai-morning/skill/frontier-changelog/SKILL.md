@@ -36,8 +36,10 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
      3) Trusted secondary sources only when official sources are unavailable (must mark as non-official)
 2. **CRITICAL**: Pull frontier model updates (new releases, major capability changes) **sequentially** using the available search tool.
 3. Keep only substantive updates (ignore minor undocumented typos/fixes) and format each clearly.
-4. Merge all collected logs into an "AI Frontier Changelog" Markdown report.
-5. Return the exact Markdown content of the changelog report in the chat output.
+4. **CRITICAL (Time Window)**: Only include entries released/updated on the same UTC calendar day as the run date (today, UTC). Ignore older entries even if they are the latest visible on a page.
+5. If a tool/model has no same-day (UTC) substantive update, output `no_updates` for that item with a short reason (e.g., "no same-day update found").
+6. Merge all collected logs into an "AI Frontier Changelog" Markdown report.
+7. Return the exact Markdown content of the changelog report in the chat output.
 
 ## Output Format
 
@@ -46,12 +48,11 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 Return a human-readable report containing:
 1. Status overview (SUCCESS, PARTIAL, NO_UPDATES).
 2. Full IDE/CLI Changelog details — for each tool (Claude Code, Codex, Cursor, Gemini CLI, Antigravity, OpenCode):
-   - Tool name and version/date
-   - Each change item with description
-   - At least one source link per tool item (prefer official website or GitHub official repo release page)
+   - If same-day (UTC) update exists: tool name + version/date + change items + at least one source link.
+   - If no same-day (UTC) update exists: output `no_updates` with a short reason.
 3. Full Model Update details:
-   - Model name and release/update date
-   - Capability changes
+   - If same-day (UTC) update exists: model name + release/update date + capability changes.
+   - If no same-day (UTC) update exists: output `no_updates` with a short reason.
 
 ## Failure Policy
 - If a specific tool/model search fails or yields no substantive updates, skip it and continue processing the others. Simply note "No updates" for that tool in the final report.

@@ -36,10 +36,13 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
      3) Trusted secondary sources only when official sources are unavailable (must mark as non-official)
 2. **CRITICAL**: Pull frontier model updates (new releases, major capability changes) **sequentially** using the available search tool.
 3. Keep only substantive updates (ignore minor undocumented typos/fixes) and format each clearly.
-4. **CRITICAL (Time Window)**: Only include entries released/updated on the same UTC calendar day as the run date (today, UTC). Ignore older entries even if they are the latest visible on a page.
-5. If a tool/model has no same-day (UTC) substantive update, output `no_updates` for that item with a short reason (e.g., "no same-day update found").
-6. Merge all collected logs into an "AI Frontier Changelog" Markdown report.
-7. Return the exact Markdown content of the changelog report in the chat output.
+4. **CRITICAL (Time Window, default)**: Use **Beijing window** by default: `昨天 09:00 -> 今天 09:00` (Asia/Shanghai).  
+   - Convert to UTC when filtering source entries.
+   - If caller explicitly provides a custom range (e.g., today UTC, last 7 days), honor the caller range.
+5. **Codex scope rule**: Codex source may contain both **Codex CLI** and **Codex app** updates. Include window-matching updates, and clearly label subtype (`Codex CLI` / `Codex app`) instead of silently dropping app entries.
+6. If a tool/model has no in-window substantive update, output `no_updates` with a short reason (e.g., "no in-window update found").
+7. Merge all collected logs into an "AI Frontier Changelog" Markdown report.
+8. Return the exact Markdown content of the changelog report in the chat output.
 
 ## Output Format
 
@@ -48,11 +51,12 @@ Use this standalone custom skill to autonomously track and pull frontier IDE/CLI
 Return a human-readable report containing:
 1. Status overview (SUCCESS, PARTIAL, NO_UPDATES).
 2. Full IDE/CLI Changelog details — for each tool (Claude Code, Codex, Cursor, Gemini CLI, Antigravity, OpenCode):
-   - If same-day (UTC) update exists: tool name + version/date + change items + at least one source link.
-   - If no same-day (UTC) update exists: output `no_updates` with a short reason.
+   - If in-window update exists: tool name + version/date + change items + at least one source link.
+   - For Codex, annotate subtype when applicable (`Codex CLI` / `Codex app`).
+   - If no in-window update exists: output `no_updates` with a short reason.
 3. Full Model Update details:
-   - If same-day (UTC) update exists: model name + release/update date + capability changes.
-   - If no same-day (UTC) update exists: output `no_updates` with a short reason.
+   - If in-window update exists: model name + release/update date + capability changes.
+   - If no in-window update exists: output `no_updates` with a short reason.
 
 ## Failure Policy
 - If a specific tool/model search fails or yields no substantive updates, skip it and continue processing the others. Simply note "No updates" for that tool in the final report.

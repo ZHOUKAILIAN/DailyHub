@@ -13,15 +13,17 @@ Use this skill exclusively to fetch the morning AI daily news. It delegates the 
 
 - Capability name: `daily-intelligence-news`
 - Reference link: `https://openclawmp.cc/asset/s-027065c89db7e63f`
+- Style guard reference: `https://tropes.fyi/tropes-md`
 - Policy:
   - If capability already exists in local/runtime environment, use it directly.
   - If missing, install it first via `skill-installer`, then continue.
   - Do not use URL lookup as runtime execution logic; treat the link as reference metadata.
+  - When invoking `daily-intelligence-news`, include a style constraint to avoid common AI writing tropes from `tropes.md` while preserving factual accuracy and markdown structure.
 
 ## Execution Flow
 
 1. Confirm `daily-intelligence-news` is available locally (installed skill/capability). If missing, install it first via `skill-installer`.
-2. Invoke the externally provided `daily-intelligence-news` capability to retrieve the latest AI news.
+2. Invoke the externally provided `daily-intelligence-news` capability to retrieve the latest AI news, and explicitly request anti-trope writing style (based on `tropes.md`) without changing facts.
 3. If configured or requested, publish the report to Xiaohongshu via an available local publishing capability.
 4. **CRITICAL**: Present the exact Markdown content of the news report to the user in the prompt output.
 

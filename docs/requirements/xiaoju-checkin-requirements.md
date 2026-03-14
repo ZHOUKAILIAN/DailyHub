@@ -62,6 +62,25 @@
 - `DAILYHUB_XIAOJU_SOURCE`
 - `DAILYHUB_XIAOJU_TTID`
 
+### 认证失败自愈策略
+
+自动恢复机制覆盖两个场景：
+
+**场景 1: 启动时凭证缺失**
+- 检测到任一必需参数缺失（`DAILYHUB_XIAOJU_TICKET`、`DAILYHUB_XIAOJU_TOKEN`、`DAILYHUB_XIAOJU_TOKEN_ID`）
+- 自动调用 `get-params` skill 启动 SMS 登录流程
+- 仅在 SMS 登录流程明确需要时才询问用户提供手机号和验证码
+
+**场景 2: 运行时认证失败**
+- 检测到认证失败（`401/403` 或 `TICKET ERROR`）
+- 自动调用 `get-params` skill 刷新凭证
+- 完成后自动重试签到任务
+
+**核心原则**:
+- 无需预询问用户"是否提供凭证"或"是否使用 API 刷新"
+- 默认自动执行恢复流程
+- 用户交互仅限于 SMS 验证码输入环节
+
 可选运行参数（带默认值）：
 
 - `DAILYHUB_XIAOJU_BASE_URL`（默认 `https://energy.xiaojukeji.com`）

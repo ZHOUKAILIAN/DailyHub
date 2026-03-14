@@ -32,23 +32,24 @@ Recommended additional variables (can use defaults if omitted):
 
 ## Execution Flow
 
-1. If required variables are missing or auth is invalid, ask:
-   `Do you want to provide Xiaoju credentials directly, or should I refresh them by API SMS login through get-params?`
-2. Branch on user choice:
-   - provide directly -> set env values and continue
-   - guided API refresh -> switch to `get-params` skill first
-3. Run status check:
+1. **Auth Check & Auto-Recovery**: Check if required auth variables are present (`DAILYHUB_XIAOJU_TICKET`, `DAILYHUB_XIAOJU_TOKEN`, `DAILYHUB_XIAOJU_TOKEN_ID`).
+   - If any required credential is missing: automatically switch to `get-params` skill to initiate SMS login flow
+   - Only request user interaction when the SMS flow explicitly needs phone number and verification code
+2. Run status check:
 
 ```bash
 python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin
 ```
 
-4. Run check-in:
+3. Run check-in:
 
 ```bash
 python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-record
 ```
 
+4. **Auth Recovery on Runtime Failure**: If auth fails during execution (`401/403/TICKET ERROR`):
+   - Automatically switch to `get-params` skill to refresh credentials via SMS login
+   - After successful credential refresh, automatically retry the check-in
 5. Return structured JSON result directly.
 
 ## Output Format
@@ -58,16 +59,18 @@ Return a case-specific human-readable report with:
 1. Overall outcome:
    - `SUCCESS` when final sign status is `already_signed` or `signed`
    - `FAILED` when auth/network/business checks fail
+   - `AUTH_RECOVERED` when auto-recovery via `get-params` was triggered and succeeded
 2. One-line summary:
    - what was executed (`status` + `run`) and final sign result
+   - mention if auth recovery was performed
 3. Key execution facts:
-   - auth readiness (ready / missing)
+   - auth readiness (ready / recovered / failed)
    - `main_before` snapshot
    - `main_after` snapshot when sign action executed
    - `record` verification result when enabled
 4. If failed:
    - root reason
-   - suggested next action (for example refresh credentials or retry once)
+   - if auth recovery was attempted and failed, include those details
 
 Optional: append structured `details` with raw command payloads.
 

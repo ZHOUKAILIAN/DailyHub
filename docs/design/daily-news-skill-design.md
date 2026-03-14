@@ -37,7 +37,7 @@ routine/ai-morning/skill/
 
 ### Task A: `daily-news`
 1. 调用工具箱/系统中提供的别人写好的 `daily-intelligence-news` 来生成当日新闻摘要。
-2. **强输出**：在这个会话中，将生成好的新闻 Markdown 格式全文直接打在对话流中返回给用户，等待后续步骤使用该结果。
+2. **强输出**：在这个会话中，将生成好的新闻 Markdown 格式全文直接打在对话流中返回给用户，等待后续步骤使用该结果。**禁止询问用户是否需要完整内容或摘要，必须默认输出完整全文。**
 
 ### Task B: `frontier-changelog`
 1. 调用 web search 能力，*严格串行*执行（一次只搜一个工具，不允许并行）：
@@ -61,7 +61,7 @@ routine/ai-morning/skill/
    - OpenCode: `https://opencode.ai/changelog`, `https://github.com/anomalyco/opencode/tags`
 4. 精简过滤：若无实质进展（如仅修了个别非感知 bug），则忽略该产品的变更日志。
 5. 汇总成一份专属的《AI 前沿工具与模型更新追踪》Markdown 报告。
-6. **强输出**：将汇总好的 Changelog 报告全文返回给用户，作为 Task C 的基础输入；每个工具条目附来源链接。
+6. **强输出**：将汇总好的 Changelog 报告全文返回给用户，作为 Task C 的基础输入；每个工具条目附来源链接。**禁止询问用户是否需要完整内容或摘要，必须默认输出完整全文。**
 
 ### Task C: `morning-publish`
 1. 提取上下文（或者接收用户在同一编排中传递的下文）中 Task A 和 Task B 的输出。

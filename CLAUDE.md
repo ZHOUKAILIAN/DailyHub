@@ -47,6 +47,31 @@
 | Refactoring | Update `docs/design/` + `docs/standards/` |
 | New conventions adopted | `docs/standards/project-conventions.md` |
 
+### MANDATORY: README Synchronization
+
+> **CRITICAL**: `README.md` is the user-facing documentation and MUST be kept in sync with `CLAUDE.md` and the actual codebase state.
+
+**When you modify ANY of the following, you MUST update `README.md`:**
+
+1. **Task Schedule Changes** → Update "已落地任务" table in README
+   - Adding/removing tasks in `daily/skill/SKILL.md`
+   - Changing task timing or descriptions
+
+2. **Architecture Changes** → Update "设计核心" and directory structure sections
+   - Modifying project structure
+   - Changing the dual-engine design
+
+3. **New Skills Added** → Update "🧩 Skill 形态" list in README
+   - Creating new skill directories
+   - Adding platform integrations
+
+4. **Workflow Changes** → Update "🤖 自动化日常任务规划" section
+   - Changing execution logic
+   - Modifying notification strategies
+   - Updating dependency assets
+
+**Rule**: Every change to `CLAUDE.md` or the project structure requires a README review. Check the README diff before committing.
+
 ---
 
 ## Project Architecture

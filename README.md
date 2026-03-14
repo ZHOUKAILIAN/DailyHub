@@ -5,7 +5,7 @@
 
 ## 设计核心
 
-```
+```text
 daily/skill/SKILL.md          ← 唯一入口：cron 注册表（只有时间 + Skill 路径）
      │
      ├── checkin/<platform>/skill/overall/SKILL.md   ← 每个签到平台的独立 Skill
@@ -18,10 +18,12 @@ daily/skill/SKILL.md          ← 唯一入口：cron 注册表（只有时间 +
 
 ## 已落地任务
 
-| 时间  | 任务                  | Skill 路径                                                                  |
-|-------|-----------------------|-----------------------------------------------------------------------------|
-| 09:00 | 小桔充电每日签到       | `checkin/xiaojuchongdian/skill/overall/SKILL.md`                            |
-| 09:20 | 晨间 AI 日报          | `routine/ai-morning/skill/ai-daily-news-and-changelog/SKILL.md`             |
+| 时间  | 任务                       | Skill 路径                                                       |
+|-------|----------------------------|------------------------------------------------------------------|
+| 09:00 | 小桔充电每日签到           | `checkin/xiaojuchongdian/skill/overall/SKILL.md`                |
+| 09:20 | AI 行业日报生成            | `routine/ai-morning/skill/daily-news/SKILL.md`                  |
+| 09:25 | 前沿 IDE/模型更新汇总      | `routine/ai-morning/skill/frontier-changelog/SKILL.md`          |
+| 09:30 | 晨间日报发布               | `routine/ai-morning/skill/morning-publish/SKILL.md`             |
 
 ## 两类驱动引擎
 
@@ -77,11 +79,14 @@ python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-r
 
 仓库已提供按功能聚合的 Skill 形态封装（与 OpenClaw 资产风格对齐）：
 
-- `daily/skill/*`（外层编排入口，仅组合子任务）
+- `daily/skill/*`（外层编排入口，仅 cron 注册表）
 - `checkin/xiaojuchongdian/skill/overall/*`
 - `checkin/xiaojuchongdian/skill/checkin/*`
 - `checkin/xiaojuchongdian/skill/get-params/*`
-- `routine/ai-morning/skill/ai-daily-news-and-changelog/*`
+- `routine/ai-morning/skill/daily-news/*`
+- `routine/ai-morning/skill/frontier-changelog/*`
+- `routine/ai-morning/skill/morning-publish/*`
+- `routine/self-optimize/skill/*`
 
 对应执行源码位于：
 
@@ -105,17 +110,24 @@ python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-r
 - **执行逻辑**：自动执行状态检查 + 签到 + 记录校验。
 - **通知策略**：成功即回执结果；失败仅报原因，等待决定后再排查。
 
-### ⏰ 09:20 AI 日报主任务
+### ⏰ 09:20 AI 行业日报生成
 
-- **执行逻辑**：调用指定的 `daily-intelligence-news` skill 产出行业日报，并合并前沿 IDE/CLI 与模型更新。
+- **执行逻辑**：调用 `daily-intelligence-news` skill 产出行业日报。
+- **关联依赖资产**：借用日报生成 Skill: [s-027065c89db7e63f](https://openclawmp.cc/asset/s-027065c89db7e63f)
+
+### ⏰ 09:25 前沿 IDE/模型更新汇总
+
+- **执行逻辑**：抓取 Claude Code、Cursor、Windsurf 等前沿工具的更新日志，以及 Claude API、Gemini 等模型的变更记录。
+- **输出策略**：只保留”有实质内容”的条目，并输出总览 + 关键变更点。
+
+### ⏰ 09:30 晨间日报发布
+
+- **执行逻辑**：统一编排日报和更新汇总的发布流程。
 - **流转链路**：
   1. 写入 Blog 的当日文件并提 PR（只提交日报单文件）。
   2. 同步将日报内容发送一份通知。
   3. 同步发布到小红书（借用 Agent-Reach OpenClaw skill，内含 MCP 能力；失败会自动重试一次）。
-  4. 更新模块只保留“有实质内容”的条目，并输出总览 + 关键变更点。
-- **关联依赖资产**：
-  - 借用日报生成 Skill: [s-027065c89db7e63f](https://openclawmp.cc/asset/s-027065c89db7e63f)
-  - 借用小红书分发 Skill（内含 MCP 能力）: [Agent-Reach](https://github.com/Panniantong/Agent-Reach)
+- **关联依赖资产**：借用小红书分发 Skill（内含 MCP 能力）: [Agent-Reach](https://github.com/Panniantong/Agent-Reach)
 
 ---
 

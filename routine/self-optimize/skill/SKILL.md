@@ -1,20 +1,329 @@
 ---
 name: self-optimize
-description: Automatically fix and improve DailyHub skills by analyzing issues, following docs-first workflow, creating PRs with fixes, and reloading updated skills. Use when skills fail, APIs change, or improvements are needed. Handles bug fixes, documentation sync, error handling, and outdated API updates. Always triggers when user mentions "self-optimize", "fix skill", "improve skill", "skill broken", or provides a skill path with an issue description.
+description: Comprehensive skill management for DailyHub - handles both creating new skills and modifying existing ones. For new skills, supports three patterns (pure custom, reuse external skill, extend external skill). For modifications, handles bug fixes, API updates, and improvements via docs-first workflow and automated PRs. Triggers on "create skill", "new skill", "fix skill", "improve skill", "skill broken", or skill path with issue description.
 ---
 
 # Self-Optimize Skill
 
-Enables DailyHub to self-improve by detecting issues in existing skills and automatically creating pull requests with fixes.
+Enables DailyHub to self-improve by managing the complete skill lifecycle: creation and optimization.
 
 ## Purpose
 
-When skills fail or need optimization, this skill automates the fix-test-deploy cycle by:
+This skill handles two main scenarios:
+
+### Scenario A: Creating New Skills
+When you need to add new functionality to DailyHub, this skill guides you through three patterns:
+1. **Pure Custom Skill** - Build from scratch (e.g., `frontier-changelog`)
+2. **Reuse External Skill** - Use existing skill as-is
+3. **Extend External Skill** - Reuse + add customization (e.g., `daily-news`)
+
+### Scenario B: Modifying Existing Skills
+When skills fail or need optimization, this skill automates the fix-test-deploy cycle:
 1. Cloning the repository
 2. Analyzing and fixing issues
 3. Following project conventions
 4. Creating PRs for human review
 5. Reloading updated skills after merge
+
+## Decision Tree: Which Scenario?
+
+**Ask user first:**
+- "Are you creating a new skill or modifying an existing one?"
+
+Then follow the appropriate workflow below.
+
+---
+
+# SCENARIO A: Creating New Skills
+
+## Step 0: Identify Creation Pattern
+
+**Ask user:**
+1. What functionality do you need?
+2. Is there an existing external skill that does this (partially or fully)?
+
+**Based on answers, classify into one of three patterns:**
+
+### Pattern 1: Pure Custom Skill (Build from Scratch)
+
+**When to use:**
+- No existing skill provides similar functionality
+- Unique business logic specific to DailyHub
+
+**Example:** `frontier-changelog` - custom logic to scrape IDE changelogs
+
+**Tools needed:**
+- `skill-creator` skill (for scaffolding)
+- Custom implementation (Python, JS, etc.)
+
+**Workflow:** → See [A1: Pure Custom Skill Workflow](#a1-pure-custom-skill-workflow)
+
+---
+
+### Pattern 2: Reuse External Skill (No Customization)
+
+**When to use:**
+- External skill fully satisfies requirements
+- No need for additional logic or output customization
+
+**Example:** Hypothetical - directly using `weather-forecast` skill without changes
+
+**Tools needed:**
+- `skill-installer` (to install external skill)
+- SKILL.md wrapper (to invoke external skill)
+
+**Workflow:** → See [A2: Reuse External Skill Workflow](#a2-reuse-external-skill-workflow)
+
+---
+
+### Pattern 3: Extend External Skill (Reuse + Customize)
+
+**When to use:**
+- External skill provides core functionality
+- Need to add customization layer (style constraints, output formatting, pre/post-processing)
+
+**Example:** `daily-news` - reuses `daily-intelligence-news` + adds style guard + output format
+
+**Tools needed:**
+- `skill-installer` (to install base skill)
+- `skill-creator` (to scaffold wrapper)
+- Custom implementation (for customization logic)
+
+**Workflow:** → See [A3: Extend External Skill Workflow](#a3-extend-external-skill-workflow)
+
+---
+
+## A1: Pure Custom Skill Workflow
+
+### Step 1: Use skill-creator
+
+**Actions:**
+1. Check if `skill-creator` is installed:
+   ```bash
+   npx skills list -g | grep skill-creator
+   ```
+2. If not installed:
+   ```bash
+   npx skills add https://github.com/anthropics/skills --skill skill-creator -y -g
+   ```
+3. Invoke `skill-creator` and provide:
+   - Skill name
+   - Description
+   - Trigger conditions
+   - Example use cases
+
+**Output:** Scaffolded skill directory with `SKILL.md` template
+
+---
+
+### Step 2: Implement Custom Logic
+
+**Actions:**
+1. Create `src/` directory under skill path
+2. Implement business logic in preferred language (Python, JS, Shell, etc.)
+3. Follow `docs/standards/coding-standards.md`
+4. Add error handling and logging
+
+**Example structure:**
+```
+routine/<name>/skill/<skill-name>/
+├── SKILL.md          # Skill definition
+└── src/              # Implementation
+    ├── main.py       # Entry point
+    └── config.yaml   # Config (if needed)
+```
+
+---
+
+### Step 3: Document Following Docs-First Workflow
+
+**Actions:**
+1. Create `docs/requirements/<skill-name>-requirements.md`
+2. Create `docs/design/<skill-name>-design.md`
+3. Update SKILL.md with:
+   - Purpose
+   - Execution flow
+   - Input/output format
+   - Failure policy
+
+**Why:** Follow CLAUDE.md mandatory docs-first workflow
+
+---
+
+### Step 4: Test & Create PR
+
+**Actions:**
+1. Test skill locally
+2. Create branch: `feat/skill-<skill-name>`
+3. Commit changes with reference to docs
+4. Create PR using `gh pr create`
+
+**Output:** PR URL for review
+
+---
+
+## A2: Reuse External Skill Workflow
+
+### Step 1: Install External Skill
+
+**Actions:**
+1. Identify external skill URL/identifier
+2. Install via `skill-installer` or package manager:
+   ```bash
+   npx skills add <external-skill-url> -y -g
+   ```
+3. Verify installation:
+   ```bash
+   npx skills list -g | grep <skill-name>
+   ```
+
+**Output:** External skill available in runtime
+
+---
+
+### Step 2: Create Wrapper SKILL.md
+
+**Actions:**
+1. Create skill directory: `routine/<name>/skill/<skill-name>/`
+2. Create minimal `SKILL.md`:
+   ```yaml
+   ---
+   name: <skill-name>
+   description: <brief description>
+   ---
+
+   # <Skill Name>
+
+   ## Purpose
+   <What this skill does>
+
+   ## External Dependency
+   - Skill: `<external-skill-name>`
+   - Source: <URL>
+
+   ## Execution Flow
+   1. Verify `<external-skill-name>` is installed
+   2. Invoke `<external-skill-name>` directly
+   3. Return result to user
+
+   ## Failure Policy
+   - If external skill not found → Install it first
+   - If execution fails → Report error, do not retry
+   ```
+
+**Why:** Wrapper provides discoverability and documentation
+
+---
+
+### Step 3: Document & Register
+
+**Actions:**
+1. Create `docs/requirements/<skill-name>-requirements.md` (minimal, reference external skill)
+2. Add to `daily/skill/SKILL.md` if scheduled
+3. Test invocation
+
+**Output:** Skill ready to use
+
+---
+
+## A3: Extend External Skill Workflow
+
+### Step 1: Install Base Skill
+
+**Actions:**
+1. Install external skill (same as A2 Step 1)
+2. Verify base functionality works
+
+---
+
+### Step 2: Scaffold Extension with skill-creator
+
+**Actions:**
+1. Use `skill-creator` to create wrapper structure
+2. Define customization points in SKILL.md:
+   - Pre-processing steps
+   - Post-processing steps
+   - Style constraints
+   - Output format transformations
+
+**Example (from `daily-news`):**
+```yaml
+---
+name: daily-news
+description: Run the daily AI news workflow by invoking an existing external capability with style customization.
+---
+
+# AI Daily News Skill
+
+## Purpose
+Fetch morning AI daily news with anti-trope style constraints.
+
+## External Capability
+- Capability name: `daily-intelligence-news`
+- Reference: https://openclawmp.cc/asset/s-027065c89db7e63f
+- Style guard: https://tropes.fyi/tropes-md
+
+## Execution Flow
+1. Verify `daily-intelligence-news` is installed
+2. Invoke with style constraint (anti-trope from tropes.md)
+3. Apply output formatting rules
+4. Return EXACT FULL Markdown content
+
+## Customization Layer
+- Style enforcement (avoid AI tropes)
+- Output format enforcement (full content, not summary)
+```
+
+---
+
+### Step 3: Implement Customization Logic
+
+**Actions:**
+1. Create `src/` directory if customization requires code
+2. Implement:
+   - Input transformation (before calling base skill)
+   - Output transformation (after calling base skill)
+   - Style guards, validators, formatters
+3. Follow coding standards
+
+**Example structure:**
+```
+routine/<name>/skill/<skill-name>/
+├── SKILL.md                # Skill definition + extension spec
+└── src/                    # Customization logic (optional)
+    ├── wrapper.py          # Calls base skill + applies customization
+    └── style_guard.py      # Style enforcement logic
+```
+
+---
+
+### Step 4: Document Extension
+
+**Actions:**
+1. Create `docs/requirements/<skill-name>-requirements.md`:
+   - Base skill reference
+   - Customization requirements
+2. Create `docs/design/<skill-name>-design.md`:
+   - Extension architecture
+   - Customization points
+3. Update SKILL.md with clear separation:
+   - External capability section
+   - Customization layer section
+
+---
+
+### Step 5: Test & Create PR
+
+**Actions:**
+1. Test base skill invocation
+2. Test customization layer
+3. Create PR with pattern label: `feat(skill): add <skill-name> (extends <base-skill>)`
+
+**Output:** PR URL for review
+
+---
+
+# SCENARIO B: Modifying Existing Skills
 
 ## Workflow
 
@@ -249,34 +558,30 @@ Affected: <list of changed files>
 
 ---
 
-## Creating New Skills
+## Pattern Selection Guide
 
-**Important:** When creating new skills within DailyHub, always use the `skill-creator` skill.
+Use this table to quickly identify which pattern fits your needs:
 
-**How to use skill-creator:**
+| Question | Pattern 1 (Pure Custom) | Pattern 2 (Reuse) | Pattern 3 (Extend) |
+|----------|------------------------|-------------------|-------------------|
+| **Does external skill exist?** | ❌ No | ✅ Yes, exact match | ✅ Yes, close match |
+| **Need customization?** | N/A | ❌ No | ✅ Yes |
+| **Implementation complexity** | High (build from scratch) | Low (wrapper only) | Medium (wrapper + custom logic) |
+| **Example** | `frontier-changelog` | Direct external skill use | `daily-news` |
 
-1. **Check if skill-creator is installed:**
-   ```bash
-   npx skills list -g | grep skill-creator
-   ```
+**Real DailyHub Examples:**
 
-2. **If not installed, install it:**
-   ```bash
-   npx skills add https://github.com/anthropics/skills --skill skill-creator -y -g
-   ```
+1. **frontier-changelog** (Pattern 1):
+   - No external skill for IDE changelog scraping
+   - Built custom web scraping logic
+   - Pure custom implementation
 
-3. **Trigger skill-creator** (method depends on your AI agent):
-   - For Claude Code: The skill is auto-loaded, just mention "create a new skill"
-   - For OpenClaw: Reference the installed skill path
-   - For other agents: Consult the skill based on your agent's skill invocation method
-
-4. **Provide skill requirements:**
-   - Skill name
-   - Description of what it should do
-   - When it should trigger
-   - Example use cases
-
-**Why:** Ensures skills follow best practices, have proper structure, and include test cases.
+2. **daily-news** (Pattern 3):
+   - Base: `daily-intelligence-news` (external)
+   - Extensions:
+     - Style guard (anti-trope from tropes.md)
+     - Output format enforcement (full content, not summary)
+     - Optional publishing to Xiaohongshu
 
 ---
 
@@ -314,15 +619,38 @@ Affected: <list of changed files>
 
 ## Supported Skills
 
-This skill can optimize:
+### Scenario A (Creation):
+- Any new skill following DailyHub conventions
+- All three patterns (Pure Custom, Reuse, Extend)
+
+### Scenario B (Modification):
 - `checkin/xiaojuchongdian/skill/*` - Xiaoju Charging skills
 - `routine/ai-morning/skill/*` - Morning routine skills
 - Any future skills following DailyHub conventions
 
 ---
 
+## Quick Reference: When to Use Each Approach
+
+| Scenario | User Says | Action | Tools Needed |
+|----------|-----------|--------|--------------|
+| **New Skill: Pure Custom** | "Create a skill to scrape X" | Follow A1 workflow | `skill-creator` |
+| **New Skill: Reuse** | "Use skill X as-is" | Follow A2 workflow | `skill-installer` |
+| **New Skill: Extend** | "Use skill X but add Y customization" | Follow A3 workflow | `skill-installer` + `skill-creator` |
+| **Fix Existing Skill** | "Skill X is broken" | Follow Scenario B workflow | Git + GitHub CLI |
+| **Improve Existing Skill** | "Optimize skill X" | Follow Scenario B workflow | Git + GitHub CLI |
+
+---
+
 ## Failure Policy
 
+### Scenario A (Creation):
+- If `skill-creator` unavailable → Guide installation
+- If external skill unavailable → Guide installation
+- If customization logic fails → Request user debugging help
+- Always document before implementing
+
+### Scenario B (Modification):
 - If prerequisites check fails → Halt immediately, provide clear error
 - If analysis finds no issues → Return success with "No issues detected"
 - If fix generation fails → Save progress, request user guidance
@@ -331,4 +659,4 @@ This skill can optimize:
 
 ---
 
-_Last updated: 2026-03-14_
+_Last updated: 2026-03-15_

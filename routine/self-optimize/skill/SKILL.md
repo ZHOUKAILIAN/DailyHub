@@ -17,9 +17,16 @@ When user asks to create a new skill or fix/improve an existing one, handle the 
 
 **Every skill produced by self-optimize MUST follow these principles:**
 
-### 1. Goal-Oriented, Not Step-by-Step
+### 1. Semantically Clear, No Ambiguity
 
-Tell the AI **what** to achieve, not **how** to execute. The AI can figure out commands, file discovery, and execution order on its own. Before writing, understand the user's intent by asking 2-3 clarifying questions (e.g., what is the goal? what does success look like? any constraints?).
+Every word in a SKILL.md must have a single clear meaning. Avoid vague terms that could be interpreted multiple ways.
+
+- ✅ "Search for major AI model releases (new versions from OpenAI, Anthropic, Google, Meta)"
+- ❌ "Update model" (update which model? update how? update the AI model itself, or update info about models?)
+
+### 2. Goal-Oriented, Not Step-by-Step
+
+Tell the AI **what** to achieve, not **how** to execute. The AI can figure out commands, file discovery, and execution order on its own.
 
 - ✅ "Complete the daily check-in and fetch sign record to verify"
 - ❌ "Run `python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-record`"
@@ -76,7 +83,7 @@ External or sub-skill dependencies must be declared in `skill.json` under `sub_s
 
 ### Workflow
 
-1. Clarify what the user needs and which pattern fits
+1. **Understand intent first**: Ask 2-3 clarifying questions, then restate the user's idea back to them in your own words. Get explicit confirmation before proceeding.
 2. Scaffold the skill directory with `SKILL.md` + `skill.json`
 3. Write the SKILL.md following the **Skill Writing Standard** above
 4. Implement code if needed (in a `src/` or `scripts/` directory within the skill)
@@ -90,9 +97,10 @@ External or sub-skill dependencies must be declared in `skill.json` under `sub_s
 ### Workflow
 
 1. Identify which skill is affected (by skill name or user description)
-2. Read the skill's SKILL.md and implementation code to understand current behavior
-3. Diagnose the issue
-4. Fix code and/or update SKILL.md
+2. **Restate the problem back to the user** and confirm understanding before making changes
+3. Read the skill's SKILL.md and implementation code to understand current behavior
+4. Diagnose the issue
+5. Fix code and/or update SKILL.md
 5. If the SKILL.md violates the **Skill Writing Standard** above, refactor it as part of the fix
 6. Test and create PR
 

@@ -59,7 +59,8 @@ class XiaojuCheckInTask(TaskModule):
             data["main_before"] = main_before
 
             if not self._is_success_payload(main_before, allow_status={10000}):
-                return self._fail("failed", "sign/main returned non-success payload", data)
+                detail = self._payload_error_detail(main_before)
+                return self._fail("failed", f"sign/main returned non-success payload: {detail}", data)
 
             today = self._today_cn_date()
             already_signed = self._is_today_signed(main_before, today=today)
@@ -87,6 +88,7 @@ class XiaojuCheckInTask(TaskModule):
             data["do_sign"] = do_sign
 
             if not self._is_success_payload(do_sign, allow_status={10000}):
+                detail = self._payload_error_detail(do_sign)
                 logger.error(
                     "doSign API returned non-success payload: code=%s msg=%s",
                     do_sign.get("code"),
@@ -94,7 +96,7 @@ class XiaojuCheckInTask(TaskModule):
                 )
                 return self._fail(
                     "failed",
-                    f"doSign rejected: {do_sign.get('code')} — {do_sign.get('msg') or do_sign.get('message')}",
+                    f"doSign rejected: {detail}",
                     data,
                 )
 
@@ -148,7 +150,8 @@ class XiaojuCheckInTask(TaskModule):
             main = self._call_sign_main()
             data["main"] = main
             if not self._is_success_payload(main, allow_status={10000}):
-                return self._fail("failed", "sign/main returned non-success payload", data)
+                detail = self._payload_error_detail(main)
+                return self._fail("failed", f"sign/main returned non-success payload: {detail}", data)
 
             today = self._today_cn_date()
             today_signed = self._is_today_signed(main, today=today)
@@ -270,6 +273,28 @@ class XiaojuCheckInTask(TaskModule):
                 pass
         code = str(payload.get("code", ""))
         return code == "SERVICE_RUN_SUCCESS"
+
+    @classmethod
+    def _payload_error_detail(cls, payload: Dict[str, Any]) -> str:
+        status = payload.get("status")
+        code = payload.get("code")
+        msg = payload.get("msg") or payload.get("message")
+        detail = f"status={status}, code={code}, msg={msg}"
+        low = " ".join(
+            [
+                str(status or ""),
+                str(code or ""),
+                str(msg or ""),
+            ]
+        ).lower()
+        if "ticket" in low or "token" in low:
+            return f"{detail} (auth credential invalid/expired)"
+        if "ad_min" in low or "am_did" in low or "am-did" in low or "设备" in str(msg or ""):
+            return (
+                f"{detail} (device header mismatch; verify DAILYHUB_XIAOJU_AM_DID "
+                "and DAILYHUB_XIAOJU_AM_DINFO from real app request)"
+            )
+        return detail
 
     @staticmethod
     def _extract_excitation_id(main_payload: Dict[str, Any]) -> Optional[str]:

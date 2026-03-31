@@ -15,7 +15,8 @@
   "requires_env": [
     "DAILYHUB_XIAOJU_TICKET",
     "DAILYHUB_XIAOJU_TOKEN",
-    "DAILYHUB_XIAOJU_TOKEN_ID"
+    "DAILYHUB_XIAOJU_TOKEN_ID",
+    "DAILYHUB_XIAOJU_AM_DID"
   ],
   "sub_skills": ["xiaoju-get-params"]
 }

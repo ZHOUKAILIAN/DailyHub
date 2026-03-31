@@ -76,6 +76,35 @@ else console.log(String(val));
 " "$json_path" "$js_expr"
 }
 
+resolve_existing_am_did() {
+  if [[ -n "${DAILYHUB_XIAOJU_AM_DID:-}" ]]; then
+    printf '%s\n' "$DAILYHUB_XIAOJU_AM_DID"
+    return 0
+  fi
+
+  local candidate
+  for candidate in \
+    "$PWD/.env" \
+    "$(dirname "$SCRIPT_DIR")/.env" \
+    "$HOME/checkin/xiaojuchongdian/.env"
+  do
+    if [[ -f "$candidate" ]]; then
+      local value
+      value="$(grep -E '^DAILYHUB_XIAOJU_AM_DID=' "$candidate" | tail -n1 | sed 's/^[^=]*=//')"
+      value="${value%\"}"
+      value="${value#\"}"
+      value="${value%\'}"
+      value="${value#\'}"
+      if [[ -n "$value" ]]; then
+        printf '%s\n' "$value"
+        return 0
+      fi
+    fi
+  done
+
+  return 1
+}
+
 subcmd="${1:-}"
 shift || true
 
@@ -137,6 +166,7 @@ case "$subcmd" in
     ttid="$(read_json_field "$json" "(obj.sign_auth && obj.sign_auth.ttid) || obj.ttid")"
     biz_line="$(read_json_field "$json" "(obj.sign_auth && obj.sign_auth.bizLine) || obj.bizLine")"
     city_id="$(read_json_field "$json" "(obj.sign_auth && obj.sign_auth.cityId) || obj.cityId")"
+    am_did="$(resolve_existing_am_did || true)"
 
     cat <<EOF
 export DAILYHUB_XIAOJU_TICKET='$ticket'
@@ -149,6 +179,11 @@ export DAILYHUB_XIAOJU_TTID='$ttid'
 export DAILYHUB_XIAOJU_BIZ_LINE='$biz_line'
 export DAILYHUB_XIAOJU_CITY_ID='$city_id'
 EOF
+    if [[ -n "$am_did" ]]; then
+      printf "export DAILYHUB_XIAOJU_AM_DID='%s'\n" "$am_did"
+    else
+      echo "# DAILYHUB_XIAOJU_AM_DID is not included here; preserve an existing value or capture it once from real app traffic" >&2
+    fi
     ;;
 
   full)

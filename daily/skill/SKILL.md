@@ -11,7 +11,6 @@ description: DailyHub daily task scheduler. Each row is an independent skill tri
 |-------|----------------------|-------------------------------------------------------|
 | 09:00 | xiaoju-overall       | Complete Xiaoju Charging daily check-in (idempotent)  |
 | 09:25 | frontier-changelog   | Summarize AI IDE/CLI and model updates in last 24h    |
-| 09:30 | personal-market-brief| Three-asset snapshot: CSI300, HK dividend, gold       |
 
 ## Installed Skills
 

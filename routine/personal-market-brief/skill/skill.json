@@ -1,0 +1,18 @@
+{
+  "name": "personal-market-brief",
+  "display_name": "Personal Market Brief",
+  "version": "1.0.0",
+  "description": "Three-asset snapshot: CSI300, HK dividend, gold — with regime assessment",
+  "entry": "SKILL.md",
+  "task_type": "api-driven",
+  "platform": "yfinance",
+  "triggers": [
+    "market brief",
+    "三资产快照",
+    "沪深300 港股红利 黄金",
+    "personal market snapshot",
+    "市场快报"
+  ],
+  "requires_env": [],
+  "sub_skills": []
+}

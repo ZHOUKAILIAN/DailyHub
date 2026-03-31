@@ -5,29 +5,23 @@ description: Analyze three personal macro assets (CSI 300, Hong Kong dividend ex
 
 # Personal Market Brief
 
-Run the bundled script to generate a compact snapshot for the three default assets.
+## Goal
 
-## Default assets
+Generate a compact snapshot for three default assets (沪深300、港股红利、黄金), assess the current market regime (risk-on / risk-off / mixed), and provide a short actionable interpretation for personal tracking.
+
+## Default Assets
+
 - CSI 300: `000300.SS`
 - HK Dividend proxy: `3110.HK`
 - Gold: `GC=F`
 
-## Command
-```bash
-uv run {baseDir}/scripts/brief.py
-```
+## Available Tools
 
-## Optional overrides
-```bash
-uv run {baseDir}/scripts/brief.py \
-  --csi300 000300.SS \
-  --hkdiv 3110.HK \
-  --gold GC=F \
-  --period 6mo
-```
+Python script in `scripts/` directory. Read `brief.py` to understand usage, supported arguments, and output format.
 
-## Output rules
-- Report per asset: latest price, 1D/5D/20D return, MA20/MA60 trend, 20D annualized volatility.
+## Output Guidelines
+
+- Present per-asset metrics as reported by the script.
 - Add a short interpretation section:
   - Risk-on if equities up and gold flat/down.
   - Risk-off if equities weak and gold strong.

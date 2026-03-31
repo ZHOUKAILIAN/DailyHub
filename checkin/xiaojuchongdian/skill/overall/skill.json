@@ -1,19 +1,21 @@
 {
   "name": "xiaoju-overall",
-  "display_name": "Xiaoju Charging Overall",
-  "version": "1.0.0",
-  "description": "Single entry orchestration for Xiaoju Charging daily automation.",
+  "display_name": "小桔充电签到",
+  "version": "2.0.0",
+  "description": "小桔充电每日自动签到（幂等）",
   "entry": "SKILL.md",
   "task_type": "api-driven",
   "platform": "xiaoju",
   "triggers": [
-    "xiaoju overall",
-    "xiaoju charging automation",
-    "run xiaoju daily flow"
+    "小桔签到",
+    "小桔充电签到",
+    "xiaoju checkin",
+    "xiaoju overall"
   ],
   "requires_env": [
     "DAILYHUB_XIAOJU_TICKET",
     "DAILYHUB_XIAOJU_TOKEN",
     "DAILYHUB_XIAOJU_TOKEN_ID"
-  ]
+  ],
+  "sub_skills": ["xiaoju-get-params"]
 }

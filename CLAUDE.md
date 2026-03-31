@@ -61,7 +61,7 @@
    - Modifying project structure
    - Changing the dual-engine design
 
-3. **New Skills Added** → Update "🧩 Skill 形态" list in README
+3. **New Skills Added** → Update "🧩 Skill 清单" table in README
    - Creating new skill directories
    - Adding platform integrations
 
@@ -100,14 +100,16 @@ DailyHub/
 ├── checkin/                           # API-driven check-in modules (per platform)
 │   └── xiaojuchongdian/
 │       ├── skill/                     # Skill definitions for OpenClaw
-│       │   ├── overall/               # Entry skill for this platform
-│       │   ├── checkin/               # Execution skill
-│       │   └── get-params/            # Auth capture guidance skill
-│       └── src/                       # Python implementation
+│       │   ├── overall/               # Self-contained entry skill (xiaoju-overall)
+│       │   ├── checkin/               # [DEPRECATED] merged into overall
+│       │   └── get-params/            # Auth refresh skill (xiaoju-get-params)
+│       └── src/                       # Python implementation (沉淀的程序化资产)
 ├── routine/                           # Prompt-driven or scheduled routines
 │   └── ai-morning/
 │       └── skill/
-│           └── ai-daily-news-and-changelog/
+│           ├── daily-news/
+│           ├── frontier-changelog/
+│           └── morning-publish/
 ├── docs/
 │   ├── requirements/                  # Feature requirements
 │   ├── design/                        # Technical design docs
@@ -118,22 +120,26 @@ DailyHub/
 
 ### Skill Architecture
 
-`daily/skill/SKILL.md` is the **single entry point** — a cron registry that maps times to skill paths.
-Every task is a self-contained vertical skill with its own execution logic and failure policy.
+`daily/skill/SKILL.md` is the **single entry point** — a cron registry that maps times to **skill names**.
+Every skill is self-contained: goal, available tools, constraints, and success criteria in one SKILL.md.
 
 ```
-daily/skill/SKILL.md          ← Cron registry (Time | Task | Skill path). No logic here.
+daily/skill/SKILL.md          ← Cron registry (Time | Skill Name | Goal). No logic here.
      │
-     ├── checkin/<platform>/skill/overall/SKILL.md   ← Per-platform entry skill
-     └── routine/<name>/skill/<task>/SKILL.md        ← Per-routine entry skill
+     ├── xiaoju-overall       ← Self-contained checkin skill (depends on xiaoju-get-params)
+     ├── daily-news           ← AI daily news skill
+     ├── frontier-changelog   ← IDE/model changelog skill
+     └── morning-publish      ← Merge & publish skill
 ```
 
-**Rule**: `daily/skill/SKILL.md` contains only a table of `Time | Task | Skill`. All logic belongs inside each vertical skill.
+**Skill design principle**: Tell the AI **what to do** + **what tools are available**, not **how to execute**. Programmatic assets (Python CLI, Shell scripts) are described as "available tools" — the AI reads the code and decides how to use them.
+
+**Rule**: `daily/skill/SKILL.md` contains only a table of `Time | Skill Name | Goal`. All logic belongs inside each skill. Skills reference each other by **name** (not path).
 
 ### Adding a New Task to the Daily Schedule
 
 1. Build the vertical skill: `checkin/<platform>/skill/` or `routine/<name>/skill/`
-2. Add one row to `daily/skill/SKILL.md`: `Time | Task name | path to SKILL.md`
+2. Add one row to `daily/skill/SKILL.md`: `Time | Skill Name | Goal`
 3. That's it — no other files need editing.
 
 ---

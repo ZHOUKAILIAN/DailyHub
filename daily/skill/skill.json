@@ -1,25 +1,19 @@
 {
   "name": "morning-orchestrator",
-  "display_name": "Morning Orchestrator",
-  "version": "1.2.0",
-  "description": "Morning automation entry point. Registers one cron job per task in the schedule table. Each job fires at its specified time and invokes the corresponding skill.",
+  "display_name": "DailyHub 每日调度",
+  "version": "2.0.0",
+  "description": "每日自动化任务调度入口，按 cron 表触发各 skill。",
   "entry": "SKILL.md",
   "task_type": "orchestration",
-  "platform": "ai-morning",
   "triggers": [
     "run morning routine",
     "start morning automation",
-    "run all morning tasks",
     "morning orchestrator",
-    "morning overall"
-  ],
-  "requires_env": [
-    "DAILYHUB_XIAOJU_TICKET",
-    "DAILYHUB_XIAOJU_TOKEN",
-    "DAILYHUB_XIAOJU_TOKEN_ID"
+    "每日任务"
   ],
   "sub_skills": [
-    "checkin/xiaojuchongdian/skill/overall",
-    "routine/ai-morning/skill/ai-daily-news-and-changelog"
+    "xiaoju-overall",
+    "frontier-changelog",
+    "self-optimize"
   ]
 }

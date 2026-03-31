@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI Daily News and Changelog"
-  short_description: "Generate AI daily report and sync changelogs"
-  default_prompt: "Use $ai-daily-news-and-changelog to run a single 09:20 pipeline for AI report plus frontier updates."

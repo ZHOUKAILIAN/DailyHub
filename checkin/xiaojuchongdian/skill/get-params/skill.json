@@ -2,7 +2,7 @@
   "name": "xiaoju-get-params",
   "display_name": "Xiaoju Charging Get Params",
   "version": "1.0.0",
-  "description": "Refresh Xiaoju authentication parameters by API SMS login and return export-ready values.",
+  "description": "Refresh Xiaoju authentication parameters by API SMS login and persist updated runtime env values.",
   "entry": "SKILL.md",
   "task_type": "api-driven",
   "platform": "xiaoju",

@@ -57,10 +57,28 @@
 - `DAILYHUB_XIAOJU_TICKET`
 - `DAILYHUB_XIAOJU_TOKEN`
 - `DAILYHUB_XIAOJU_TOKEN_ID`
+- `DAILYHUB_XIAOJU_AM_DID`
 - `DAILYHUB_XIAOJU_APP_ID`
 - `DAILYHUB_XIAOJU_AM_CHANNEL`
 - `DAILYHUB_XIAOJU_SOURCE`
 - `DAILYHUB_XIAOJU_TTID`
+
+### 隔离运行时配置加载要求
+
+为兼容 OpenClaw 的 isolated cron session，配置加载必须遵循以下顺序：
+
+1. 优先读取当前进程已经显式导出的环境变量
+2. 若关键小桔凭证缺失，则自动从本地常见 `.env` 配置源补载
+3. 至少必须覆盖以下候选路径：
+   - 当前工作目录下的 `.env`
+   - DailyHub 仓库根目录下的 `.env`
+   - `/root/DailyHub/.env`
+   - `/root/.env`
+
+补载规则：
+- 仅在进程内补齐缺失变量，不覆盖已经显式注入的值
+- 补载后必须继续使用同一配置源完成后续 `status/run` 校验
+- 若补载后仍缺失关键变量，应明确返回缺失字段，不能伪装成成功执行
 
 ### 认证失败自愈策略
 
@@ -119,6 +137,7 @@
 3. 已签到场景重复执行不报错
 4. 所有认证信息来自环境变量，无硬编码密钥
 5. 日志中可看到每个步骤开始/结束与错误原因
+6. 在隔离环境（未预先导出 `DAILYHUB_XIAOJU_*`）下，只要本地 `.env` 完整，`status` 仍能成功读取配置并执行
 
 ---
 
@@ -136,6 +155,9 @@ python3 -m checkin.xiaojuchongdian.src.main run --task xiaoju.checkin --verify-r
 
 # 4) 仅查询状态
 python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin
+
+# 5) 隔离环境回归（不继承 shell 中的小桔变量）
+env -i PATH="$PATH" HOME="$HOME" bash -lc 'cd /path/to/DailyHub && python3 -m checkin.xiaojuchongdian.src.main status --task xiaoju.checkin'
 ```
 
 ---

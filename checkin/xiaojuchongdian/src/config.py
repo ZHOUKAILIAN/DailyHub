@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import logging
 import os
+import shlex
 from dataclasses import dataclass
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +15,78 @@ class ConfigError(ValueError):
     """Raised when required runtime configuration is missing or invalid."""
 
 
+def _parse_env_assignment(raw_line: str) -> tuple[str, str] | None:
+    line = raw_line.strip()
+    if not line or line.startswith("#"):
+        return None
+    if line.startswith("export "):
+        line = line[len("export ") :].strip()
+    if "=" not in line:
+        return None
+    key, value = line.split("=", 1)
+    key = key.strip()
+    if not key:
+        return None
+    value = value.strip()
+    if not value:
+        return key, ""
+    try:
+        parsed = shlex.split(value, comments=False, posix=True)
+    except ValueError:
+        parsed = [value]
+    if len(parsed) == 1:
+        return key, parsed[0]
+    return key, value
+
+
+def _load_env_file(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    loaded_any = False
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        parsed = _parse_env_assignment(raw_line)
+        if not parsed:
+            continue
+        key, value = parsed
+        os.environ.setdefault(key, value)
+        loaded_any = True
+    if loaded_any:
+        logger.info("loaded Xiaoju env defaults from %s", path)
+    return loaded_any
+
+
+def _bootstrap_env() -> None:
+    current_file = Path(__file__).resolve()
+    repo_root = current_file.parents[3]
+    candidates = [
+        Path.cwd() / ".env",
+        repo_root / ".env",
+        repo_root.parent / ".env",
+        Path("/root/DailyHub/.env"),
+        Path("/root/.env"),
+    ]
+    seen: set[Path] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve(strict=False)
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        _load_env_file(resolved)
+
+
+_BOOTSTRAPPED_ENV = False
+
+
+def _ensure_env_bootstrapped() -> None:
+    global _BOOTSTRAPPED_ENV
+    if _BOOTSTRAPPED_ENV:
+        return
+    _bootstrap_env()
+    _BOOTSTRAPPED_ENV = True
+
+
 def _get_required_env(name: str) -> str:
+    _ensure_env_bootstrapped()
     value = os.getenv(name, "").strip()
     if not value:
         raise ConfigError(f"missing required env: {name}")
@@ -21,6 +94,7 @@ def _get_required_env(name: str) -> str:
 
 
 def _get_optional_env(name: str, default: str) -> str:
+    _ensure_env_bootstrapped()
     raw = os.getenv(name)
     if raw is None:
         return default
@@ -36,6 +110,7 @@ def _get_optional_env(name: str, default: str) -> str:
 
 
 def _get_int_env(name: str, default: int) -> int:
+    _ensure_env_bootstrapped()
     raw = os.getenv(name)
     if raw is None or raw.strip() == "":
         return default
@@ -46,6 +121,7 @@ def _get_int_env(name: str, default: int) -> int:
 
 
 def _get_float_env(name: str, default: float) -> float:
+    _ensure_env_bootstrapped()
     raw = os.getenv(name)
     if raw is None or raw.strip() == "":
         return default

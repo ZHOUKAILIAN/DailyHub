@@ -99,6 +99,33 @@ class TaskModule(Protocol):
 4. 失败原因语义化（认证失败、业务失败、网络失败）
 5. CLI 输出 JSON，便于机器消费
 
+### 6.1 隔离运行时配置补载设计
+
+问题背景：
+- OpenClaw 的 isolated cron session 不保证继承登录 shell 中的环境变量
+- 小桔签到任务过去直接依赖 `os.getenv` 读取 `DAILYHUB_XIAOJU_*`
+- 一旦 cron session 没有这些变量，就会在 `status` 前置阶段直接抛出 `missing required env`
+
+设计要求：
+1. 配置模块在首次读取环境变量前，先执行一次轻量级 bootstrap
+2. bootstrap 优先保留当前进程里已存在的显式环境变量
+3. 若变量缺失，则从常见本地 `.env` 位置补齐默认值
+4. `.env` 解析仅支持简单 `KEY=VALUE` / `export KEY=VALUE` 赋值格式，满足当前 DailyHub 配置源即可
+5. 仅使用 `os.environ.setdefault(...)` 注入，避免覆盖调用方显式传入的值
+6. bootstrap 应幂等，避免在单次进程中重复加载
+
+候选 `.env` 路径：
+- 当前工作目录 `.env`
+- 仓库根目录 `.env`
+- 仓库父目录 `.env`
+- `/root/DailyHub/.env`
+- `/root/.env`
+
+预期收益：
+- 手动运行与 cron 隔离运行共享同一配置源
+- 失败模式从“隐式缺 env”收敛为“补载后仍缺 env”
+- 降低 cron 因环境继承差异导致的伪故障
+
 ---
 
 ## 7. 调用建议
